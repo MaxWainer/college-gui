@@ -6,8 +6,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import maxwainer.college.gui.values.AppValues;
 
 public class HelloApplication extends Application {
+
+  private AppValues values;
 
   @Override
   public void start(Stage stage) throws IOException {
