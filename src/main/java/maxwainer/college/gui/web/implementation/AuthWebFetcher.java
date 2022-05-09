@@ -39,8 +39,9 @@ public final class AuthWebFetcher implements WebFetcher<WebResult<String>> {
         .url(String.format("%s/auth",
             config.getOrThrow("base-url", String.class)
         ))
-        .addHeader("Username", username)
-        .addHeader("Password", password)
+        .addHeader("Authorization", "")
+        .addHeader("Content-type", "")
+        .addHeader("Accept", "application/json")
         .build();
 
     return CompletableFuture.supplyAsync(() -> {
@@ -51,6 +52,7 @@ public final class AuthWebFetcher implements WebFetcher<WebResult<String>> {
           final String rawMessage = response.message();
 
           if (rawMessage.equals("success")) {
+
             return new WebResult<>(InternalCodes.VALID,
                 Objects.requireNonNull(response.header("Token")));
           }

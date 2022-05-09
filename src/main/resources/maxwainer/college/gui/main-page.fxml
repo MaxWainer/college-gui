@@ -4,6 +4,6 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="maxwainer.college.gui.pages.MainPageController">
-  <Button layoutX="150.0" layoutY="168.0" mnemonicParsing="false" onMouseClicked="#onLoginClick" prefHeight="66.0" prefWidth="112.0" text="Log-in" />
-  <Button layoutX="350.0" layoutY="168.0" mnemonicParsing="false" onMouseClicked="#onRegisterClick" prefHeight="66.0" prefWidth="112.0" text="Register" />
+  <Button layoutX="294.0" layoutY="267.0" mnemonicParsing="false" onMouseClicked="#onLoginClick" prefHeight="66.0" prefWidth="112.0" text="Log-in" fx:id="loginButton"/>
+  <Button layoutX="494.0" layoutY="267.0" mnemonicParsing="false" onMouseClicked="#onRegisterClick" prefHeight="66.0" prefWidth="112.0" text="Register" fx:id="registerButton"/>
 </AnchorPane>

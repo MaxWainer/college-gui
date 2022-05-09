@@ -44,7 +44,7 @@ public class LoginPageController {
 
     final AuthWebFetcher fetcher = optional.get();
 
-    final WebResult result;
+    final WebResult<String> result;
     try {
       result = fetcher.fetchData(
           WebParameters

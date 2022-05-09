@@ -3,6 +3,7 @@ plugins {
   id 'application'
   id 'org.openjfx.javafxplugin' version '0.0.10'
   id 'org.beryx.jlink' version '2.24.1'
+  id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group 'maxwainer.college.gui'
@@ -24,8 +25,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-  mainModule = 'maxwainer.college.gui.collegegui'
-  mainClass = 'maxwainer.college.gui.collegegui.HelloApplication'
+  mainModule = 'maxwainer.college.gui'
+  mainClass = 'maxwainer.college.gui.CollegeGuiApplication'
 }
 
 javafx {
@@ -51,7 +52,7 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp:4.9.3'
   implementation 'org.jetbrains:annotations:23.0.0'
   implementation 'com.google.guava:guava:31.1-jre'
-  implementation 'com.google.inject:guice:4.0'
+  implementation 'com.google.inject:guice:5.1.0'
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
