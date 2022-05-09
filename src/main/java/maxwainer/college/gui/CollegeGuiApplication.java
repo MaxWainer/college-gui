@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import maxwainer.college.gui.pages.LoginPageController;
 import maxwainer.college.gui.values.AppValues;
 
 public class HelloApplication extends Application {
@@ -14,9 +15,10 @@ public class HelloApplication extends Application {
 
   @Override
   public void start(Stage stage) throws IOException {
-    FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        LoginPageController.class.getResource("pages/login-page.fxml"));
     Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-    stage.setTitle("Hello!");
+    stage.setTitle("Trains - By Max_Wainer");
     stage.setScene(scene);
     stage.show();
   }
