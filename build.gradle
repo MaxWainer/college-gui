@@ -4,6 +4,7 @@ plugins {
   id 'org.openjfx.javafxplugin' version '0.0.10'
   id 'org.beryx.jlink' version '2.24.1'
   id 'com.github.johnrengelman.shadow' version '7.1.2'
+  id 'org.jetbrains.kotlin.jvm' version '1.6.20'
 }
 
 group 'maxwainer.college.gui'
@@ -48,11 +49,13 @@ dependencies {
     exclude(group: 'org.openjfx')
   }
 
-  implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
+  implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.20'
+  compileClasspath 'org.jetbrains.kotlin:kotlin-stdlib:1.6.20'
   implementation 'com.squareup.okhttp3:okhttp:4.9.3'
   implementation 'org.jetbrains:annotations:23.0.0'
   implementation 'com.google.guava:guava:31.1-jre'
   implementation 'com.google.inject:guice:5.1.0'
+  implementation 'com.google.code.gson:gson:2.9.0'
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")

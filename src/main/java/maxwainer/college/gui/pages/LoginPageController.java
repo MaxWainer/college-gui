@@ -1,22 +1,28 @@
 package maxwainer.college.gui.pages;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import java.io.IOException;
 import java.util.Optional;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import maxwainer.college.gui.web.WebResult;
+import maxwainer.college.gui.common.Alerts;
+import maxwainer.college.gui.exception.MissingPropertyException;
+import maxwainer.college.gui.values.AppValues;
 import maxwainer.college.gui.web.WebFetcherRegistry;
-import maxwainer.college.gui.web.WebResult.InternalCodes;
-import maxwainer.college.gui.web.implementation.AuthWebFetcher;
+import maxwainer.college.gui.web.enums.user.LoginResult;
+import maxwainer.college.gui.web.implementation.auth.LoginWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
+import maxwainer.college.gui.web.result.EnumResult;
+import maxwainer.college.gui.web.result.StringResult;
 
-public class LoginPageController {
+public class LoginPageController extends AbstractPage {
 
   @Inject
   private WebFetcherRegistry fetcherRegistry;
+
+  @Inject
+  private AppValues appValues;
 
   @FXML
   private PasswordField passwordField;
@@ -25,47 +31,50 @@ public class LoginPageController {
   private TextField usernameField;
 
   @FXML
-  private AnchorPane pane;
-
-  @FXML
   protected void onLoginClick() {
     // get username
-    final String username = usernameField.getAccessibleText();
+    final var username = usernameField.getAccessibleText();
     // get password
-    final String password = passwordField.getAccessibleText();
+    final var password = passwordField.getAccessibleText();
 
-    final Optional<AuthWebFetcher> optional = fetcherRegistry.findFetcher(AuthWebFetcher.class);
+    final var optional = fetcherRegistry.findFetcher(LoginWebFetcher.class);
 
     if (optional.isEmpty()) {
-      pane.getChildren().add(new Label(
-          "Internal error, contact developer! Developer information: 'Auth fetcher is not present!'"));
+      Alerts.showError("Internal error, contact developer!",
+          "Developer information: 'Auth fetcher is not present!'");
       return;
     }
 
-    final AuthWebFetcher fetcher = optional.get();
+    final var fetcher = optional.get();
 
-    final WebResult<String> result;
     try {
-      result = fetcher.fetchData(
+      final var result = fetcher.fetchData(
           WebParameters
               .builder()
               .appendParam("username", username)
               .appendParam("password", password)
               .build()
       ).join();
-    } catch (Throwable e) {
 
-      throw new RuntimeException(e);
-    }
+      if (result instanceof EnumResult enumResult) {
+        final var enumValue = (LoginResult) enumResult.value();
 
-    if (result.flagsPresent(InternalCodes.AUTH_INVALID_LOGIN)) {
-      pane.getChildren().add(new Label("Invalid login!"));
-      return;
-    }
+        if (enumValue == LoginResult.INVALID_PASSWORD) {
+          Alerts.showError("Error while logging in", "Invalid password!");
+        }
 
-    if (result.flagsPresent(InternalCodes.AUTH_INVALID_PASSWORD)) {
-      pane.getChildren().add(new Label("Invalid password!"));
-      return;
+        if (enumValue == LoginResult.UNKNOWN_USER) {
+          Alerts.showError("Error while logging in", "You are not registered!");
+        }
+      }
+
+      if (result instanceof StringResult stringResult) {
+        final String token = stringResult.value();
+        appValues.accessToken(token);
+      }
+
+    } catch (MissingPropertyException | IOException e) {
+      Alerts.showException(e);
     }
   }
 

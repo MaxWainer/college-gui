@@ -12,11 +12,19 @@ public final class Alerts {
     throw new AssertionError();
   }
 
-  public static void showAlert(final @NotNull Throwable throwable) {
+  public static void showException(final @NotNull Throwable throwable) {
+    showError("Error in application!", buildError(throwable));
+
+    throwable.printStackTrace();
+  }
+
+  public static void showError(
+      final @NotNull String title,
+      final @NotNull String errorMessage) {
     final Alert alert = new Alert(AlertType.ERROR);
 
-    alert.setTitle("Error in application!");
-    alert.setContentText(buildError(throwable));
+    alert.setTitle(title);
+    alert.setContentText(errorMessage);
 
     alert.show();
   }

@@ -1,9 +1,7 @@
 package maxwainer.college.gui.common;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import org.jetbrains.annotations.NotNull;
 
 public final class FXMLQuickLoader {
@@ -12,10 +10,10 @@ public final class FXMLQuickLoader {
     throw new AssertionError();
   }
 
-  public static @NotNull Parent load(final @NotNull String url) throws IOException {
+  public static @NotNull InputStream load(final @NotNull String url) {
     final ClassLoader classLoader = FXMLQuickLoader.class.getClassLoader();
 
-    return FXMLLoader.load(Objects.requireNonNull(classLoader.getResource("maxwainer/college/gui/" + url)));
+    return Objects.requireNonNull(classLoader.getResourceAsStream("maxwainer/college/gui/" + url + ".fxml"));
   }
 
 }
