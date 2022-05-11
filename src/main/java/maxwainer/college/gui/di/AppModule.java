@@ -59,7 +59,8 @@ public final class AppModule extends AbstractModule {
     // okhttp
     // start
     try {
-      final TrustManager[] trustEverything = new TrustManager[]{
+      // disable certificate checks
+      final var trustEverything = new TrustManager[]{
           new X509TrustManager() {
             @Override
             public void checkClientTrusted(X509Certificate[] chain, String authType)
@@ -80,6 +81,7 @@ public final class AppModule extends AbstractModule {
 
       final var context = SSLContext.getInstance("SSL");
 
+      // init context
       context.init(null, trustEverything, new SecureRandom());
 
       final var socketFactory = context.getSocketFactory();
@@ -87,6 +89,7 @@ public final class AppModule extends AbstractModule {
       this.bind(OkHttpClient.class).toInstance(new OkHttpClient.Builder()
           .retryOnConnectionFailure(true)
           .sslSocketFactory(socketFactory, (X509TrustManager) trustEverything[0])
+          // trust everything
           .hostnameVerifier((hostname, session) -> true)
           .build());
     } catch (NoSuchAlgorithmException | KeyManagementException e) {

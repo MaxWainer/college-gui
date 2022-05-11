@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javafx.scene.control.TextField;
 import maxwainer.college.gui.common.Checks;
 
-public class NumericField extends TextField {
+public final class NumericField extends TextField {
 
   private final AtomicInteger value = new AtomicInteger(0);
 

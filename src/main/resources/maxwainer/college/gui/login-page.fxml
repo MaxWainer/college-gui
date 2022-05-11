@@ -3,8 +3,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="maxwainer.college.gui.pages.LoginPageController">
-  <Button layoutX="401.0" layoutY="334.0" mnemonicParsing="false" onMouseClicked="#onLoginClick" prefHeight="50.0" prefWidth="100.0" text="Log-in" />
-  <PasswordField layoutX="376.0" layoutY="265.0" promptText="Enter your password..." />
-  <TextField layoutX="376.0" layoutY="217.0" promptText="Enter username..." />
+<?import maxwainer.college.gui.layout.NumericField?>
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="maxwainer.college.gui.pages.LoginPageController">
+  <Button layoutX="401.0" layoutY="334.0" mnemonicParsing="false" onMouseClicked="#onLoginClick"
+    prefHeight="50.0" prefWidth="100.0" text="Log-in"/>
+  <PasswordField layoutX="377.0" layoutY="275.0" promptText="Enter your password..."
+    fx:id="passwordField"/>
+  <TextField layoutX="377.0" layoutY="235.0" promptText="Enter username..." fx:id="usernameField"/>
+  <NumericField layoutX="377.0" layoutY="197.0" promptText="Enter passport id..."
+    fx:id="passportIdField"/>
 </AnchorPane>

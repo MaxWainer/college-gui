@@ -18,10 +18,23 @@ public final class Alerts {
     throwable.printStackTrace();
   }
 
+  public static void showInfo(
+      final @NotNull String title,
+      final @NotNull String errorMessage) {
+    showAlert(title, errorMessage, AlertType.INFORMATION);
+  }
+
   public static void showError(
       final @NotNull String title,
       final @NotNull String errorMessage) {
-    final Alert alert = new Alert(AlertType.ERROR);
+    showAlert(title, errorMessage, AlertType.ERROR);
+  }
+
+  private static void showAlert(
+      final @NotNull String title,
+      final @NotNull String errorMessage,
+      final @NotNull AlertType alertType) {
+    final Alert alert = new Alert(alertType);
 
     alert.setTitle(title);
     alert.setContentText(errorMessage);

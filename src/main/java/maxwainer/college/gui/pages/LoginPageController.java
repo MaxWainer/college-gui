@@ -2,15 +2,15 @@ package maxwainer.college.gui.pages;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Optional;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import maxwainer.college.gui.common.Alerts;
 import maxwainer.college.gui.exception.MissingPropertyException;
+import maxwainer.college.gui.layout.NumericField;
 import maxwainer.college.gui.values.AppValues;
 import maxwainer.college.gui.web.WebFetcherRegistry;
-import maxwainer.college.gui.web.enums.user.LoginResult;
+import maxwainer.college.gui.web.enums.user.TokenResult;
 import maxwainer.college.gui.web.implementation.auth.LoginWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.EnumResult;
@@ -31,11 +31,16 @@ public class LoginPageController extends AbstractPage {
   private TextField usernameField;
 
   @FXML
+  private NumericField passportIdField;
+
+  @FXML
   protected void onLoginClick() {
     // get username
-    final var username = usernameField.getAccessibleText();
+    final var username = usernameField.getText();
     // get password
-    final var password = passwordField.getAccessibleText();
+    final var password = passwordField.getText();
+
+    final var passportId = passportIdField.getValue();
 
     final var optional = fetcherRegistry.findFetcher(LoginWebFetcher.class);
 
@@ -51,26 +56,33 @@ public class LoginPageController extends AbstractPage {
       final var result = fetcher.fetchData(
           WebParameters
               .builder()
+              .appendParam("passportId", passportId)
               .appendParam("username", username)
               .appendParam("password", password)
               .build()
       ).join();
 
       if (result instanceof EnumResult enumResult) {
-        final var enumValue = (LoginResult) enumResult.value();
+        final var enumValue = (TokenResult) enumResult.value();
 
-        if (enumValue == LoginResult.INVALID_PASSWORD) {
+        if (enumValue == TokenResult.INVALID_PASSWORD) {
           Alerts.showError("Error while logging in", "Invalid password!");
         }
 
-        if (enumValue == LoginResult.UNKNOWN_USER) {
+        if (enumValue == TokenResult.UNKNOWN_USER) {
           Alerts.showError("Error while logging in", "You are not registered!");
+        }
+
+        if (enumValue == TokenResult.ALREADY_LOGGED_IN) {
+          Alerts.showError("Error while logging in", "You are already have active session!");
         }
       }
 
       if (result instanceof StringResult stringResult) {
         final String token = stringResult.value();
         appValues.accessToken(token);
+
+        Alerts.showInfo("Your token is ready!", "Your token: " + token);
       }
 
     } catch (MissingPropertyException | IOException e) {

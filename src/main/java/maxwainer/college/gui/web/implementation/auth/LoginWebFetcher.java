@@ -3,19 +3,19 @@ package maxwainer.college.gui.web.implementation.auth;
 import java.io.IOException;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.object.model.LoginModel;
-import maxwainer.college.gui.web.enums.user.LoginResult;
+import maxwainer.college.gui.web.enums.user.TokenResult;
 import maxwainer.college.gui.web.params.WebParameters;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 
-public final class LoginWebFetcher extends AbstractAuthWebFetcher<LoginResult> {
+public final class LoginWebFetcher extends AbstractAuthWebFetcher<TokenResult> {
 
 
   @Override
-  protected @NotNull LoginResult resolveOrdinal(int ordinal) {
-    return LoginResult.values()[ordinal];
+  protected @NotNull TokenResult resolveOrdinal(int ordinal) {
+    return TokenResult.values()[ordinal];
   }
 
   @Override
