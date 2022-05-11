@@ -7,8 +7,11 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import maxwainer.college.gui.web.WebFetcher;
 import maxwainer.college.gui.web.WebFetcherRegistry;
+import maxwainer.college.gui.web.implementation.active.ActiveListWebFetcher;
+import maxwainer.college.gui.web.implementation.auth.ClearCacheWebFetcher;
 import maxwainer.college.gui.web.implementation.auth.LoginWebFetcher;
 import maxwainer.college.gui.web.implementation.auth.RegisterWebFetcher;
+import maxwainer.college.gui.web.implementation.ticket.TicketListWebFetcher;
 import org.jetbrains.annotations.NotNull;
 
 final class WebFetcherRegistryImpl implements WebFetcherRegistry {
@@ -18,6 +21,9 @@ final class WebFetcherRegistryImpl implements WebFetcherRegistry {
   WebFetcherRegistryImpl() {
     registerFetcher(new RegisterWebFetcher());
     registerFetcher(new LoginWebFetcher());
+    registerFetcher(new ActiveListWebFetcher());
+    registerFetcher(new ClearCacheWebFetcher());
+    registerFetcher(new TicketListWebFetcher());
   }
 
   @Override

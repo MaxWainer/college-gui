@@ -4,6 +4,7 @@ import java.io.IOException;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.object.model.LoginModel;
 import maxwainer.college.gui.web.enums.user.TokenResult;
+import maxwainer.college.gui.web.implementation.MediaTypes;
 import maxwainer.college.gui.web.params.WebParameters;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -30,14 +31,9 @@ public final class LoginWebFetcher extends AbstractAuthWebFetcher<TokenResult> {
     final var requestBody = RequestBody.create(
         gson.toJson(new LoginModel(username, password, passportId)),
         // deserialize model (referenced to C# LoginModel class)
-        MediaType.parse("application/json")); // set media type to json
+        MediaTypes.JSON); // set media type to json
 
-    return new Request.Builder()
-        .url(String.format("%s/users/User/loginUser", // set login route
-            config.getOrThrow("base-url", String.class) // define base url
-        ))
-        .addHeader("Accept", "application/json") // set accepts
-        .addHeader("Connection", "close")
+    return routeRequest("users/User/loginUser")
         .post(requestBody) // set to post request body
         .build();
   }

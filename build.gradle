@@ -12,6 +12,7 @@ version '1.0-SNAPSHOT'
 
 repositories {
   mavenCentral()
+  maven { url 'https://jitpack.io' }
 }
 
 ext {
@@ -49,13 +50,18 @@ dependencies {
     exclude(group: 'org.openjfx')
   }
 
-  implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.20'
+  implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.21'
   compileClasspath 'org.jetbrains.kotlin:kotlin-stdlib:1.6.20'
   implementation 'com.squareup.okhttp3:okhttp:4.9.3'
   implementation 'org.jetbrains:annotations:23.0.0'
   implementation 'com.google.guava:guava:31.1-jre'
   implementation 'com.google.inject:guice:5.1.0'
   implementation 'com.google.code.gson:gson:2.9.0'
+
+  // as far as gson won't fully support records serialization, we should use some
+  // standalone libs
+  // See: https://github.com/google/gson/issues/1794
+  implementation 'com.github.Marcono1234:gson-record-type-adapter-factory:0.2.0'
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")

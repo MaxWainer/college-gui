@@ -1,6 +1,5 @@
 package maxwainer.college.gui.web.params;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 final class WebParametersImpl implements WebParameters {
+
+  static final WebParametersImpl EMPTY = new WebParametersImpl(Collections.emptyMap());
 
   private final Map<String, Object> rawMap;
 

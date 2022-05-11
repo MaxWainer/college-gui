@@ -26,10 +26,11 @@ import org.jetbrains.annotations.NotNull;
 //    }
 public record Active(
     int activeId,
+    int stationId,
+    int trainId,
     @NotNull Direction mainDirection,
     @NotNull Train train,
     @NotNull Collection<Ticket> tickets,
     @NotNull LocalDateTime mainStartDateTime,
     @NotNull LocalDateTime startDateTime) {
-
 }

@@ -1,12 +1,13 @@
-package maxwainer.college.gui.pages;
+package maxwainer.college.gui.pages.auth;
 
 import com.dlsc.formsfx.model.structure.IntegerField;
-import javax.inject.Inject;
+import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import maxwainer.college.gui.common.Alerts;
 import maxwainer.college.gui.layout.NumericField;
+import maxwainer.college.gui.pages.AbstractPage;
 import maxwainer.college.gui.values.AppValues;
 import maxwainer.college.gui.web.WebFetcherRegistry;
 import maxwainer.college.gui.web.enums.user.RegisterResult;
@@ -16,12 +17,6 @@ import maxwainer.college.gui.web.result.EnumResult;
 import maxwainer.college.gui.web.result.StringResult;
 
 public class RegisterPageController extends AbstractPage {
-
-  @Inject
-  private WebFetcherRegistry webFetcherRegistry;
-
-  @Inject
-  private AppValues appValues;
 
   @FXML
   private PasswordField firstPasswordField;

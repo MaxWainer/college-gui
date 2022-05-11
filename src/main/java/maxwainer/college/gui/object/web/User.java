@@ -23,6 +23,9 @@ public record User(
     @NotNull String firstName,
     @NotNull String secondName,
     @NotNull String patronymic,
+    @NotNull String password,
+    @NotNull String username,
+    @NotNull String role,
     @NotNull Collection<Ticket> tickets) {
 
 }

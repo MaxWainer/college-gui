@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 <?import maxwainer.college.gui.layout.NumericField?>
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="maxwainer.college.gui.pages.RegisterPageController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="maxwainer.college.gui.pages.auth.RegisterPageController">
   <Button layoutX="401.0" layoutY="362.0" mnemonicParsing="false" onMouseClicked="#onRegisterClick" prefHeight="50.0" prefWidth="100.0" text="Register" />
   <PasswordField layoutX="377.0" layoutY="271.0" promptText="Enter your password..." fx:id="firstPasswordField"/>
   <PasswordField layoutX="377.0" layoutY="307.0" promptText="Repeat your password..." fx:id="repeatPasswordField"/>

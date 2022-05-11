@@ -12,4 +12,9 @@ public interface WebFetcher<T extends Result> {
   @NotNull CompletableFuture<T> fetchData(final @NotNull WebParameters parameters)
       throws MissingPropertyException, IOException;
 
+  default @NotNull CompletableFuture<T> fetchData()
+      throws MissingPropertyException, IOException {
+    return fetchData(WebParameters.empty());
+  }
+
 }

@@ -1,6 +1,6 @@
-package maxwainer.college.gui.pages;
+package maxwainer.college.gui.pages.auth;
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
@@ -8,6 +8,7 @@ import javafx.scene.control.TextField;
 import maxwainer.college.gui.common.Alerts;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.layout.NumericField;
+import maxwainer.college.gui.pages.AbstractPage;
 import maxwainer.college.gui.values.AppValues;
 import maxwainer.college.gui.web.WebFetcherRegistry;
 import maxwainer.college.gui.web.enums.user.TokenResult;
@@ -17,9 +18,6 @@ import maxwainer.college.gui.web.result.EnumResult;
 import maxwainer.college.gui.web.result.StringResult;
 
 public class LoginPageController extends AbstractPage {
-
-  @Inject
-  private WebFetcherRegistry fetcherRegistry;
 
   @Inject
   private AppValues appValues;
@@ -42,7 +40,7 @@ public class LoginPageController extends AbstractPage {
 
     final var passportId = passportIdField.getValue();
 
-    final var optional = fetcherRegistry.findFetcher(LoginWebFetcher.class);
+    final var optional = webFetcherRegistry.findFetcher(LoginWebFetcher.class);
 
     if (optional.isEmpty()) {
       Alerts.showError("Internal error, contact developer!",
@@ -82,7 +80,8 @@ public class LoginPageController extends AbstractPage {
         final String token = stringResult.value();
         appValues.accessToken(token);
 
-        Alerts.showInfo("Your token is ready!", "Your token: " + token);
+        Alerts.showInfo("Successful logging-in!", "Your token: " + token);
+        openPage("base-page");
       }
 
     } catch (MissingPropertyException | IOException e) {

@@ -15,6 +15,10 @@ public interface WebParameters {
     return new BuilderImpl();
   }
 
+  static WebParameters empty() {
+    return WebParametersImpl.EMPTY;
+  }
+
   @NotNull @Unmodifiable Map<String, Object> rawMap();
 
   default <T> @NotNull Optional<T> get(final @NotNull String name, final @NotNull Class<T> as) {

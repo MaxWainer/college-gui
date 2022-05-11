@@ -1,10 +1,14 @@
-open module maxwainer.college.gui {
+module maxwainer.college.gui {
   requires javafx.controls;
   requires javafx.fxml;
   requires javafx.web;
+  // https://github.com/google/gson/issues/1794
+  requires marcono1234.gson.recordadapter;
 
-  requires org.controlsfx.controls;
-  requires com.dlsc.formsfx;
+  opens maxwainer.college.gui.object.web to
+      marcono1234.gson.recordadapter,
+      com.google.gson;
+
   requires org.kordamp.ikonli.javafx;
   requires org.kordamp.bootstrapfx.core;
   requires org.jetbrains.annotations;
@@ -12,7 +16,9 @@ open module maxwainer.college.gui {
   requires okhttp3;
   requires com.google.guice;
   requires com.google.gson;
-  requires javax.inject;
 
-  exports maxwainer.college.gui;
+  requires java.logging;
+  requires java.base;
+  requires java.compiler;
+  requires com.dlsc.formsfx;
 }

@@ -2,6 +2,7 @@ package maxwainer.college.gui.object.web;
 
 import java.time.LocalDateTime;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 // c# class:
 //     public partial class Ticket
@@ -22,9 +23,14 @@ import org.jetbrains.annotations.NotNull;
 //    }
 public record Ticket(
     int ticketId,
+    int relatedDirectionId,
+    int relatedActiveId,
+    int passportId,
+    int endStationId,
+    int sittingId,
     @NotNull LocalDateTime startDate,
     @NotNull Station endStation,
-    @NotNull User passport,
+    @Nullable User passport,
     @NotNull Active relatedActive,
     @NotNull Sitting sitting,
     @NotNull Direction relatedDirection) {

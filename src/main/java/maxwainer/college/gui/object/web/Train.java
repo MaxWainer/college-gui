@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 public record Train(
     int trainId,
     @NotNull String name,
-    @NotNull Collection<Active> actives,
+    @NotNull Active actives,
     @NotNull Collection<Carriage> carriages) {
 
 }

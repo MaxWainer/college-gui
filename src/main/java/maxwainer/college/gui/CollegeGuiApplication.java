@@ -2,6 +2,13 @@ package maxwainer.college.gui;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,14 +16,49 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import maxwainer.college.gui.common.AppLogger;
 import maxwainer.college.gui.di.AppModule;
+import maxwainer.college.gui.exception.MissingPropertyException;
+import maxwainer.college.gui.task.WebServiceHeartbeatListener;
+import maxwainer.college.gui.values.AppValues;
+import maxwainer.college.gui.web.WebFetcherRegistry;
+import maxwainer.college.gui.web.implementation.auth.ClearCacheWebFetcher;
 
 public final class CollegeGuiApplication extends Application {
+
+  private Injector injector;
+
+  @Override
+  public void stop() throws Exception {
+    final var values = injector.getInstance(AppValues.class);
+
+    if (values.accessTokenNotPresent()) {
+      AppLogger.LOGGER.info(() -> "Token not found!");
+      return;
+    }
+
+    final var webFetcherRegistry = injector
+        .getInstance(WebFetcherRegistry.class);
+    final var optionalFetcher = webFetcherRegistry
+        .findFetcher(ClearCacheWebFetcher.class);
+
+    if (optionalFetcher.isEmpty()) {
+      throw new UnsupportedOperationException();
+    }
+
+    final var fetcher = optionalFetcher.get();
+
+    try {
+      AppLogger.LOGGER.info("Clear cache result: " + fetcher.fetchData().join());
+    } catch (MissingPropertyException | IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   @Override
   public void start(Stage stage) throws IOException {
     // create injector
-    final Injector injector = Guice.createInjector(new AppModule(stage));
+    this.injector = Guice.createInjector(new AppModule(stage));
 
     // get loader
     final FXMLLoader loader = injector.getInstance(FXMLLoader.class);
@@ -41,6 +83,14 @@ public final class CollegeGuiApplication extends Application {
     // show it
     stage.setScene(scene);
     stage.show();
+
+    // start few heartbeat service
+    final var scheduler = injector.getInstance(ScheduledExecutorService.class);
+
+    // check each second, is server down
+    scheduler.scheduleWithFixedDelay(injector.getInstance(WebServiceHeartbeatListener.class),
+        0, 1,
+        TimeUnit.SECONDS); // TODO: Think, why dfuck this shit won't work
   }
 
   public static void main(String[] args) {

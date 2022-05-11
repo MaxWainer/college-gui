@@ -24,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 //    }
 public record Direction(
     int directionId,
+    int endStationId,
+    int startStationId,
     @NotNull String name,
     @NotNull Collection<Active> actives,
     @NotNull Collection<Station> stations,

@@ -2,6 +2,7 @@ package maxwainer.college.gui.object.web;
 
 import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 // c# class:
 //     public partial class Sitting
@@ -20,8 +21,9 @@ import org.jetbrains.annotations.NotNull;
 //    }
 public record Sitting(
     int sitId,
+    int relatedCarriageId,
     @NotNull String index,
     @NotNull Carriage relatedCarriage,
-    @NotNull Collection<Ticket> tickets) {
+    @Nullable Ticket ticket) {
 
 }

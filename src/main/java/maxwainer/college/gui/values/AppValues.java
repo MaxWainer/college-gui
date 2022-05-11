@@ -1,7 +1,6 @@
 package maxwainer.college.gui.values;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class AppValues {
 
@@ -11,8 +10,19 @@ public final class AppValues {
     this.accessToken = accessToken;
   }
 
-  @Nullable
+  public boolean accessTokenPresent() {
+    return accessToken != null;
+  }
+
+  public boolean accessTokenNotPresent() {
+    return !accessTokenPresent();
+  }
+
+  @NotNull
   public String accessToken() {
+    if (accessToken == null)
+      throw new UnsupportedOperationException("Token is not defined!");
+
     return accessToken;
   }
 }

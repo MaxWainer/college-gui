@@ -1,36 +1,37 @@
 package maxwainer.college.gui.di;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
-import java.net.Socket;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.time.LocalDateTime;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509ExtendedTrustManager;
 import javax.net.ssl.X509TrustManager;
+import marcono1234.gson.recordadapter.RecordTypeAdapterFactory;
+import maxwainer.college.gui.common.AppLogger;
 import maxwainer.college.gui.common.MoreResources;
+import maxwainer.college.gui.common.gson.LocalDateTimeSerializer;
 import maxwainer.college.gui.config.AppConfig;
-import maxwainer.college.gui.pages.LoginPageController;
+import maxwainer.college.gui.pages.auth.LoginPageController;
 import maxwainer.college.gui.pages.MainPageController;
-import maxwainer.college.gui.pages.RegisterPageController;
+import maxwainer.college.gui.pages.auth.RegisterPageController;
+import maxwainer.college.gui.task.WebServiceHeartbeatListener;
 import maxwainer.college.gui.values.AppValues;
 import maxwainer.college.gui.web.WebFetcherRegistry;
 import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import org.jetbrains.annotations.NotNull;
 
 public final class AppModule extends AbstractModule {
@@ -98,12 +99,44 @@ public final class AppModule extends AbstractModule {
     // end
 
     // gson
-    this.bind(Gson.class).toInstance(new Gson());
+    this.bind(Gson.class).toInstance(
+        new GsonBuilder()
+            // See: https://github.com/google/gson/issues/1794
+            .registerTypeAdapterFactory(RecordTypeAdapterFactory.builder()
+                .allowMissingComponentValues() // we can have missing components
+                .allowJsonNullForPrimitiveComponents()
+                .create()
+            )
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+            .serializeNulls()
+            .create());
 
     // create web fetcher
     final WebFetcherRegistryImpl webFetcherRegistry = new WebFetcherRegistryImpl();
     webFetcherRegistry.configure(this.binder()); // configure internals for fetchers
 
     this.bind(WebFetcherRegistry.class).toInstance(webFetcherRegistry);
+
+    // scheduler services
+    bind(ScheduledExecutorService.class)
+        .toInstance(
+            Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(),
+                new ThreadFactory() {
+
+                  private final AtomicInteger counter = new AtomicInteger(0);
+
+                  @Override
+                  public Thread newThread(@NotNull Runnable r) {
+                    final var thread = new Thread(String.format("internal-application-service-%s",
+                        counter.getAndIncrement()));
+
+                    thread.setUncaughtExceptionHandler(
+                        (t, e) -> AppLogger.LOGGER.log(Level.SEVERE, e,
+                            () -> "Uncaught exception in thread " + t.getName()));
+
+                    return thread;
+                  }
+                }));
+    bind(WebServiceHeartbeatListener.class).toInstance(new WebServiceHeartbeatListener());
   }
 }

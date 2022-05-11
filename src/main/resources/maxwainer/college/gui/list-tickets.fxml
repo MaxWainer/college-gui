@@ -5,10 +5,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="maxwainer.college.gui.pages.ListTicketsController">
-   <children>
-      <Button layoutX="98.0" layoutY="310.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="127.0" text="Back to main menu" />
-      <ComboBox layoutX="225.0" layoutY="188.0" prefWidth="150.0" promptText="Active ID" />
-      <Button layoutX="375.0" layoutY="310.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="127.0" text="Order ticket" />
-   </children>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="maxwainer.college.gui.pages.ticket.ListTicketsController">
+
 </AnchorPane>

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 //    }
 public record Carriage(
     int carriageId,
+    int relatedTrainId,
     @NotNull String index,
     @NotNull Train relatedTrain,
     @NotNull Collection<Sitting> sittings) {
