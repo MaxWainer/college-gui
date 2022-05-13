@@ -2,21 +2,16 @@ package maxwainer.college.gui;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutionException;
+import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 import maxwainer.college.gui.common.AppLogger;
+import maxwainer.college.gui.common.MoreResources;
 import maxwainer.college.gui.di.AppModule;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.task.WebServiceHeartbeatListener;
@@ -74,14 +69,10 @@ public final class CollegeGuiApplication extends Application {
     final FXMLLoader loader = injector.getInstance(FXMLLoader.class);
 
     // load main page content
-    final Parent content = loader.load(
-        CollegeGuiApplication
-            .class
-            .getClassLoader()
-            .getResourceAsStream("maxwainer/college/gui/main-page.fxml"));
+    final Parent content = loader.load(MoreResources.loadFxmlFile("main-page"));
 
     // set scene
-    final Scene scene = new Scene(content, 900, 600);
+    final var scene = new Scene(content, 900, 600);
     stage.setTitle("Trains - By Ilya Koreysha");
 
     // lock screen

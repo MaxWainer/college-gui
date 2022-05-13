@@ -34,7 +34,7 @@ public final class Alerts {
       final @NotNull String title,
       final @NotNull String errorMessage,
       final @NotNull AlertType alertType) {
-    final Alert alert = new Alert(alertType);
+    final var alert = new Alert(alertType);
 
     alert.setTitle(title);
     alert.setContentText(errorMessage);
@@ -43,13 +43,13 @@ public final class Alerts {
   }
 
   private static @NotNull String buildError(final @NotNull Throwable throwable) {
-    final StringBuilder builder = new StringBuilder();
+    final var builder = new StringBuilder();
 
     builder
         .append(throwable.getClass().getName()).append(": ")
         .append(throwable.getMessage()).append('\n');
 
-    for (final StackTraceElement stackTraceElement : sanitizeStackTrace(
+    for (final var stackTraceElement : sanitizeStackTrace(
         throwable.getStackTrace())) {
       builder.append(stackTraceElement.toString()).append('\n');
     }
@@ -59,9 +59,9 @@ public final class Alerts {
 
   private static List<StackTraceElement> sanitizeStackTrace(
       final @NotNull StackTraceElement[] elements) {
-    final List<StackTraceElement> output = new ArrayList<>();
+    final var output = new ArrayList<StackTraceElement>();
 
-    for (final StackTraceElement element : elements) {
+    for (final var element : elements) {
       if (element.getClassName().contains("maxwainer.college.gui")) {
         output.add(element);
       }

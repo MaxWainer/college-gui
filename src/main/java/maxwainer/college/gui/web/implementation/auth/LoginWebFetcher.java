@@ -6,7 +6,6 @@ import maxwainer.college.gui.object.model.LoginModel;
 import maxwainer.college.gui.web.enums.user.TokenResult;
 import maxwainer.college.gui.web.implementation.MediaTypes;
 import maxwainer.college.gui.web.params.WebParameters;
-import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;

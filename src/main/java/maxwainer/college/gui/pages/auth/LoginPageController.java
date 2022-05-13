@@ -6,23 +6,18 @@ import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import maxwainer.college.gui.common.Alerts;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.layout.NumericField;
-import maxwainer.college.gui.pages.AbstractPage;
 import maxwainer.college.gui.values.AppValues;
-import maxwainer.college.gui.web.WebFetcherRegistry;
 import maxwainer.college.gui.web.enums.user.TokenResult;
 import maxwainer.college.gui.web.implementation.auth.LoginWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.EnumResult;
-import maxwainer.college.gui.web.result.StringResult;
 
 public class LoginPageController extends AbstractAuthPage {
 

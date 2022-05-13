@@ -5,11 +5,9 @@ import java.io.IOException;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.object.web.Ticket;
 import maxwainer.college.gui.web.implementation.AbstractWebFetcher;
-import maxwainer.college.gui.web.implementation.MediaTypes;
 import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.ObjectListResult;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 
 public final class TicketListWebFetcher extends AbstractWebFetcher<ObjectListResult<Ticket>> {

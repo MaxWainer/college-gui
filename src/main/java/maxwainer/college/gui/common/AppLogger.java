@@ -6,7 +6,8 @@ public final class AppLogger {
 
   public static final Logger LOGGER = Logger.getLogger("Application");
 
-  private AppLogger() {}
+  private AppLogger() {
+  }
 
 
 }

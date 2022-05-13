@@ -39,7 +39,7 @@ final class WebFetcherRegistryImpl implements WebFetcherRegistry {
 
   void configure(final @NotNull Binder binder) {
     for (Entry<Class<? extends WebFetcher>, WebFetcher> entry : registry.entrySet()) {
-      final Class clazz = entry.getKey();
+      final Class clazz = entry.getKey(); // we should generic-less define type here
       final var fetcher = entry.getValue();
 
       binder.bind(clazz).toInstance(fetcher);

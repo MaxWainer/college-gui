@@ -1,6 +1,5 @@
 package maxwainer.college.gui.object.web;
 
-import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

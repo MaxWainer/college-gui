@@ -22,4 +22,20 @@ public final class AppConfig {
     return get(name, as).orElseThrow(() -> new MissingPropertyException(name));
   }
 
+  public @NotNull String baseUrl() {
+    try {
+      return getOrThrow("base-url", String.class);
+    } catch (MissingPropertyException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public boolean checkConnectionCertificate() {
+    try {
+      return getOrThrow("check-connection-certificate", Boolean.class);
+    } catch (MissingPropertyException e) {
+      return false;
+    }
+  }
+
 }

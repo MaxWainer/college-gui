@@ -12,4 +12,8 @@ public final class Tuples {
     return new Tuple2Impl<>(key, value);
   }
 
+  public static <F, S, T> @NotNull Tuple3<F, S, T> of(final F first, final S second,
+      final T third) {
+    return new Tuple3Impl<>(first, second, third);
+  }
 }

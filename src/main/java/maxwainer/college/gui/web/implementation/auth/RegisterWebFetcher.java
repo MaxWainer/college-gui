@@ -36,13 +36,7 @@ public final class RegisterWebFetcher extends AbstractAuthWebFetcher<RegisterRes
         // deserialize model (referenced to C# LoginModel class)
         MediaType.parse("application/json")); // set media type to json
 
-    return new Request.Builder()
-        .url(String.format("%s/users/User/registerUser", // set login route
-            config.getOrThrow("base-url", String.class) // define base url
-        ))
-        //.addHeader("Authorization", "Bearer " + apiToken)
-        .addHeader("content-type", "application/json")
-        .addHeader("Connection","close")
+    return routeRequest("users/User/registerUser")
         .post(requestBody) // set to post request body
         .build();
   }

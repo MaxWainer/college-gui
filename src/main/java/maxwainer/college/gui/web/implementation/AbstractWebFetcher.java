@@ -14,8 +14,6 @@ import maxwainer.college.gui.values.AppValues;
 import maxwainer.college.gui.web.WebFetcher;
 import maxwainer.college.gui.web.implementation.active.ActiveListWebFetcher;
 import maxwainer.college.gui.web.implementation.auth.AbstractAuthWebFetcher;
-import maxwainer.college.gui.web.implementation.auth.ClearCacheWebFetcher;
-import maxwainer.college.gui.web.implementation.auth.LoginWebFetcher;
 import maxwainer.college.gui.web.implementation.ticket.TicketListWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.Result;
@@ -23,7 +21,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.jetbrains.annotations.NotNull;
 
-public sealed abstract class AbstractWebFetcher<T extends Result> implements WebFetcher<T> permits
+public abstract sealed class AbstractWebFetcher<T extends Result> implements WebFetcher<T> permits
     ActiveListWebFetcher, TicketListWebFetcher, AbstractAuthWebFetcher {
 
   @Inject
@@ -78,7 +76,7 @@ public sealed abstract class AbstractWebFetcher<T extends Result> implements Web
   protected Request.Builder routeRequest(final @NotNull String subPath)
       throws MissingPropertyException {
     final var url = String.format("%s/%s", // set login route
-        config.getOrThrow("base-url", String.class), // define base url
+        config.baseUrl(), // define base url
         subPath
     );
 
@@ -88,5 +86,11 @@ public sealed abstract class AbstractWebFetcher<T extends Result> implements Web
         .url(url)
         .addHeader("Accept", "application/json") // set accepts
         .addHeader("Connection", "close");
+  }
+
+  protected Request.Builder routeAuthorizedRequest(final @NotNull String subPath)
+      throws MissingPropertyException {
+    return routeRequest(subPath)
+        .addHeader("Authorization", "bearer " + values.accessToken());
   }
 }

@@ -2,7 +2,7 @@ package maxwainer.college.gui.object.model;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface UserTargetedModel {
+public sealed interface UserTargetedModel permits LoginModel, RegisterModel {
 
   @NotNull String username();
 

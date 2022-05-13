@@ -3,7 +3,6 @@ package maxwainer.college.gui.di;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -12,21 +11,18 @@ import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import marcono1234.gson.recordadapter.RecordTypeAdapterFactory;
-import maxwainer.college.gui.common.AppLogger;
 import maxwainer.college.gui.common.MoreResources;
+import maxwainer.college.gui.common.ThreadFactories;
 import maxwainer.college.gui.common.gson.LocalDateTimeSerializer;
 import maxwainer.college.gui.config.AppConfig;
-import maxwainer.college.gui.pages.auth.LoginPageController;
 import maxwainer.college.gui.pages.MainPageController;
+import maxwainer.college.gui.pages.auth.LoginPageController;
 import maxwainer.college.gui.pages.auth.RegisterPageController;
 import maxwainer.college.gui.task.WebServiceHeartbeatListener;
 import maxwainer.college.gui.values.AppValues;
@@ -44,10 +40,12 @@ public final class AppModule extends AbstractModule {
 
   @Override
   protected void configure() {
+    final var config = new AppConfig(MoreResources.properties("appConfig"));
+
     // basic values
     this.bind(FXMLLoader.class).toProvider(new FXMLProvider());
     this.bind(AppValues.class).toInstance(new AppValues());
-    this.bind(AppConfig.class).toInstance(new AppConfig(MoreResources.properties("appconfig")));
+    this.bind(AppConfig.class).toInstance(config);
     this.bind(Stage.class).toInstance(parentStage);
 
     // pages
@@ -60,39 +58,14 @@ public final class AppModule extends AbstractModule {
     // okhttp
     // start
     try {
-      // disable certificate checks
-      final var trustEverything = new TrustManager[]{
-          new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
-            }
+      final OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+          .retryOnConnectionFailure(true);
 
-            @Override
-            public void checkServerTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
-            }
+      if (config.checkConnectionCertificate()) {
+        disableCertification(clientBuilder);
+      }
 
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-              return new X509Certificate[]{};
-            }
-          }
-      };
-
-      final var context = SSLContext.getInstance("SSL");
-
-      // init context
-      context.init(null, trustEverything, new SecureRandom());
-
-      final var socketFactory = context.getSocketFactory();
-
-      this.bind(OkHttpClient.class).toInstance(new OkHttpClient.Builder()
-          .retryOnConnectionFailure(true)
-          .sslSocketFactory(socketFactory, (X509TrustManager) trustEverything[0])
-          // trust everything
-          .hostnameVerifier((hostname, session) -> true)
-          .build());
+      this.bind(OkHttpClient.class).toInstance(clientBuilder.build());
     } catch (NoSuchAlgorithmException | KeyManagementException e) {
       throw new RuntimeException(e);
     }
@@ -107,6 +80,7 @@ public final class AppModule extends AbstractModule {
                 .allowJsonNullForPrimitiveComponents()
                 .create()
             )
+            // Need to C# format backward support
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
             .serializeNulls()
             .create());
@@ -121,22 +95,43 @@ public final class AppModule extends AbstractModule {
     bind(ScheduledExecutorService.class)
         .toInstance(
             Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(),
-                new ThreadFactory() {
+                ThreadFactories.createFactory("internal-application-service-%s")));
 
-                  private final AtomicInteger counter = new AtomicInteger(0);
-
-                  @Override
-                  public Thread newThread(@NotNull Runnable r) {
-                    final var thread = new Thread(r, String.format("internal-application-service-%s",
-                        counter.getAndIncrement()));
-
-                    thread.setUncaughtExceptionHandler(
-                        (t, e) -> AppLogger.LOGGER.log(Level.SEVERE, e,
-                            () -> "Uncaught exception in thread " + t.getName()));
-
-                    return thread;
-                  }
-                }));
     bind(WebServiceHeartbeatListener.class).toInstance(new WebServiceHeartbeatListener());
+  }
+
+  private static void disableCertification(final @NotNull OkHttpClient.Builder builder)
+      throws KeyManagementException, NoSuchAlgorithmException {
+    // disable certificate checks
+    final var trustEverything = new TrustManager[]{
+        new X509TrustManager() {
+          @Override
+          public void checkClientTrusted(X509Certificate[] chain, String authType)
+              throws CertificateException {
+          }
+
+          @Override
+          public void checkServerTrusted(X509Certificate[] chain, String authType)
+              throws CertificateException {
+          }
+
+          @Override
+          public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[]{};
+          }
+        }
+    };
+
+    final var context = SSLContext.getInstance("SSL");
+
+    // init context
+    context.init(null, trustEverything, new SecureRandom());
+
+    final var socketFactory = context.getSocketFactory();
+
+    builder
+        .sslSocketFactory(socketFactory, (X509TrustManager) trustEverything[0])
+        // trust everything
+        .hostnameVerifier((hostname, session) -> true);
   }
 }

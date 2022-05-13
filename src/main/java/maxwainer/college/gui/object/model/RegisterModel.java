@@ -7,4 +7,5 @@ public record RegisterModel(
     String username,
     String password,
     int passportId) implements UserTargetedModel {
+
 }

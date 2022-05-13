@@ -33,4 +33,5 @@ public record Active(
     @NotNull Collection<Ticket> tickets,
     @NotNull LocalDateTime mainStartDateTime,
     @NotNull LocalDateTime startDateTime) {
+
 }

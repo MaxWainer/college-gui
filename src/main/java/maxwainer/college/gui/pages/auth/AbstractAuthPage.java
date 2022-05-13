@@ -1,17 +1,22 @@
 package maxwainer.college.gui.pages.auth;
 
 import javafx.fxml.Initializable;
+import maxwainer.college.gui.common.tuple.Tuple2;
+import maxwainer.college.gui.object.web.User;
 import maxwainer.college.gui.pages.AbstractSubPage;
+import maxwainer.college.gui.web.result.ObjectResult;
 import maxwainer.college.gui.web.result.Result;
-import maxwainer.college.gui.web.result.StringResult;
 import org.jetbrains.annotations.NotNull;
 
 abstract class AbstractAuthPage extends AbstractSubPage implements Initializable {
 
+  @SuppressWarnings("unchecked")
   protected void handleResult(final @NotNull Result<?> result) {
-    if (result instanceof StringResult stringResult) {
-      final String token = stringResult.value();
-      appValues.accessToken(token);
+    if (result instanceof ObjectResult<?> objectResult) {
+      final var data = (Tuple2<String, User>) objectResult.value();
+
+      appValues.accessToken(data.key());
+      appValues.user(data.value());
 
       openPage("base-page");
     }

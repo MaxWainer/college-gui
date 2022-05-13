@@ -1,15 +1,12 @@
 package maxwainer.college.gui.task;
 
-import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -60,7 +57,7 @@ public final class WebServiceHeartbeatListener implements Runnable {
     if (this.checkUrl == null) {
       this.checkUrl = String.format(
           "%s/dummy/Dummy/check",
-          appConfig.getOrThrow("base-url", String.class)
+          appConfig.baseUrl()
       );
     }
 
