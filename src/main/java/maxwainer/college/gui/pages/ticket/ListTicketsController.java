@@ -11,4 +11,9 @@ public class ListTicketsController extends AbstractSubPage implements Initializa
   public void initialize(URL location, ResourceBundle resources) {
 
   }
+
+  @Override
+  protected String backPageName() {
+    return "base-page";
+  }
 }

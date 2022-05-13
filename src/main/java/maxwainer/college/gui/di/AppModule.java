@@ -127,7 +127,7 @@ public final class AppModule extends AbstractModule {
 
                   @Override
                   public Thread newThread(@NotNull Runnable r) {
-                    final var thread = new Thread(String.format("internal-application-service-%s",
+                    final var thread = new Thread(r, String.format("internal-application-service-%s",
                         counter.getAndIncrement()));
 
                     thread.setUncaughtExceptionHandler(

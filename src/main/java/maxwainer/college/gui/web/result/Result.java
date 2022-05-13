@@ -2,7 +2,8 @@ package maxwainer.college.gui.web.result;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface Result<T> {
+public sealed interface Result<T> permits StringResult, ObjectResult, ObjectListResult,
+    InvalidResult, EnumResult {
 
   static Result<String> invalidResult(final @NotNull String errorMessage) {
     return new InvalidResult(errorMessage);

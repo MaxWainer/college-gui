@@ -5,7 +5,6 @@ import javafx.scene.input.MouseEvent;
 
 public class BasePageController extends AbstractPage {
 
-  @FXML
   public void onOrderTicketClick() {
     openPage("order-ticket");
   }

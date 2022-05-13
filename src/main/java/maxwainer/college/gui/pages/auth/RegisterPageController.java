@@ -1,22 +1,22 @@
 package maxwainer.college.gui.pages.auth;
 
-import com.dlsc.formsfx.model.structure.IntegerField;
-import com.google.inject.Inject;
+import static javafx.beans.binding.Bindings.isEmpty;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import maxwainer.college.gui.common.Alerts;
 import maxwainer.college.gui.layout.NumericField;
-import maxwainer.college.gui.pages.AbstractPage;
-import maxwainer.college.gui.values.AppValues;
-import maxwainer.college.gui.web.WebFetcherRegistry;
 import maxwainer.college.gui.web.enums.user.RegisterResult;
 import maxwainer.college.gui.web.implementation.auth.RegisterWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.EnumResult;
-import maxwainer.college.gui.web.result.StringResult;
 
-public class RegisterPageController extends AbstractPage {
+public class RegisterPageController extends AbstractAuthPage implements Initializable {
 
   @FXML
   private PasswordField firstPasswordField;
@@ -38,6 +38,9 @@ public class RegisterPageController extends AbstractPage {
 
   @FXML
   private NumericField passportIdField;
+
+  @FXML
+  private Button registerButton;
 
 
   @FXML
@@ -91,18 +94,30 @@ public class RegisterPageController extends AbstractPage {
         if (enumValue == RegisterResult.USER_ALREADY_EXISTS) {
           Alerts.showError("Error while registering", "User with this name already exists!");
         }
+
+        if (enumValue == RegisterResult.INTERNAL_ERROR) {
+          Alerts.showError("Error while registering", "An internal error accquired!");
+        }
       }
 
-      if (result instanceof StringResult stringResult) {
-        final String token = stringResult.value();
-        appValues.accessToken(token);
-
-        Alerts.showError("Success!", token);
-      }
+      handleResult(result);
 
     } catch (final Exception exception) {
       Alerts.showException(exception);
     }
   }
 
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    registerButton.disableProperty()
+        .bind(
+            isEmpty(passportIdField.textProperty())
+                .or(isEmpty(usernameField.textProperty()))
+                .or(isEmpty(firstPasswordField.textProperty()))
+                .or(isEmpty(repeatPasswordField.textProperty()))
+                .or(isEmpty(firstNameField.textProperty()))
+                .or(isEmpty(secondNameField.textProperty()))
+                .or(isEmpty(patronymicField.textProperty()))
+        );
+  }
 }

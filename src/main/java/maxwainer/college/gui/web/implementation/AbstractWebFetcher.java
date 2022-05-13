@@ -12,13 +12,19 @@ import maxwainer.college.gui.config.AppConfig;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.values.AppValues;
 import maxwainer.college.gui.web.WebFetcher;
+import maxwainer.college.gui.web.implementation.active.ActiveListWebFetcher;
+import maxwainer.college.gui.web.implementation.auth.AbstractAuthWebFetcher;
+import maxwainer.college.gui.web.implementation.auth.ClearCacheWebFetcher;
+import maxwainer.college.gui.web.implementation.auth.LoginWebFetcher;
+import maxwainer.college.gui.web.implementation.ticket.TicketListWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.Result;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractWebFetcher<T extends Result> implements WebFetcher<T> {
+public sealed abstract class AbstractWebFetcher<T extends Result> implements WebFetcher<T> permits
+    ActiveListWebFetcher, TicketListWebFetcher, AbstractAuthWebFetcher {
 
   @Inject
   protected OkHttpClient client;

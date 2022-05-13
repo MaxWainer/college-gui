@@ -2,8 +2,6 @@ module maxwainer.college.gui {
   requires javafx.controls;
   requires javafx.fxml;
   requires javafx.web;
-  // https://github.com/google/gson/issues/1794
-  requires marcono1234.gson.recordadapter;
 
   opens maxwainer.college.gui.object.web to
       marcono1234.gson.recordadapter,
@@ -21,4 +19,5 @@ module maxwainer.college.gui {
   requires java.base;
   requires java.compiler;
   requires com.dlsc.formsfx;
+  requires marcono1234.gson.recordadapter;
 }

@@ -34,24 +34,23 @@ public final class CollegeGuiApplication extends Application {
 
     if (values.accessTokenNotPresent()) {
       AppLogger.LOGGER.info(() -> "Token not found!");
-      return;
-    }
+    } else {
+      final var webFetcherRegistry = injector
+          .getInstance(WebFetcherRegistry.class);
+      final var optionalFetcher = webFetcherRegistry
+          .findFetcher(ClearCacheWebFetcher.class);
 
-    final var webFetcherRegistry = injector
-        .getInstance(WebFetcherRegistry.class);
-    final var optionalFetcher = webFetcherRegistry
-        .findFetcher(ClearCacheWebFetcher.class);
+      if (optionalFetcher.isEmpty()) {
+        throw new UnsupportedOperationException();
+      }
 
-    if (optionalFetcher.isEmpty()) {
-      throw new UnsupportedOperationException();
-    }
+      final var fetcher = optionalFetcher.get();
 
-    final var fetcher = optionalFetcher.get();
-
-    try {
-      AppLogger.LOGGER.info("Clear cache result: " + fetcher.fetchData().join());
-    } catch (MissingPropertyException | IOException e) {
-      throw new RuntimeException(e);
+      try {
+        AppLogger.LOGGER.info("Clear cache result: " + fetcher.fetchData().join());
+      } catch (MissingPropertyException | IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 
@@ -59,6 +58,17 @@ public final class CollegeGuiApplication extends Application {
   public void start(Stage stage) throws IOException {
     // create injector
     this.injector = Guice.createInjector(new AppModule(stage));
+
+    // we should check is server up before the main window appears
+    // start few heartbeat service
+    final var scheduler = injector.getInstance(ScheduledExecutorService.class);
+
+    // check each second, is server down
+    scheduler.scheduleAtFixedRate(injector.getInstance(WebServiceHeartbeatListener.class),
+        0, 1,
+        TimeUnit.MILLISECONDS);
+
+    // main application entry
 
     // get loader
     final FXMLLoader loader = injector.getInstance(FXMLLoader.class);
@@ -84,13 +94,13 @@ public final class CollegeGuiApplication extends Application {
     stage.setScene(scene);
     stage.show();
 
-    // start few heartbeat service
-    final var scheduler = injector.getInstance(ScheduledExecutorService.class);
-
-    // check each second, is server down
-    scheduler.scheduleWithFixedDelay(injector.getInstance(WebServiceHeartbeatListener.class),
-        0, 1,
-        TimeUnit.SECONDS); // TODO: Think, why dfuck this shit won't work
+    stage.setOnCloseRequest(event -> {
+      try {
+        stop();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   public static void main(String[] args) {

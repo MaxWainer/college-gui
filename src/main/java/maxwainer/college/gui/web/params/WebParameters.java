@@ -9,7 +9,7 @@ import maxwainer.college.gui.web.params.WebParametersImpl.BuilderImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-public interface WebParameters {
+public sealed interface WebParameters permits WebParametersImpl {
 
   static WebParameters.Builder builder() {
     return new BuilderImpl();

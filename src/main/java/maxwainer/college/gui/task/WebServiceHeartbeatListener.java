@@ -4,15 +4,21 @@ import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import maxwainer.college.gui.common.AppLogger;
 import maxwainer.college.gui.config.AppConfig;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.jetbrains.annotations.NotNull;
 
 public final class WebServiceHeartbeatListener implements Runnable {
 
@@ -22,12 +28,13 @@ public final class WebServiceHeartbeatListener implements Runnable {
   @Inject
   private OkHttpClient client;
 
+  private String checkUrl;
+
   @Override
   public void run() {
-    AppLogger.LOGGER.info("Checking server for heartbeat...");
     try {
       final var request = new Request.Builder()
-          .url(appConfig.getOrThrow("base-url", String.class))
+          .url(checkUrl())
           .head()
           .build();
 
@@ -35,8 +42,6 @@ public final class WebServiceHeartbeatListener implements Runnable {
 
       try (final var response = call.execute()) { // execute it
         final var errorStatus = response.code();
-
-        AppLogger.LOGGER.info(() -> String.valueOf(errorStatus));
 
         // all 500-more errors indicates server-side problem
         // service unavailable, internal error and etc.
@@ -51,15 +56,33 @@ public final class WebServiceHeartbeatListener implements Runnable {
     }
   }
 
+  private @NotNull String checkUrl() throws MissingPropertyException {
+    if (this.checkUrl == null) {
+      this.checkUrl = String.format(
+          "%s/dummy/Dummy/check",
+          appConfig.getOrThrow("base-url", String.class)
+      );
+    }
+
+    return this.checkUrl;
+  }
+
   private static void exit() {
     AppLogger.LOGGER.severe("Server is down! Stopping application...");
 
-    final var alert = new Alert(AlertType.ERROR);
+    final var alert = new Alert(AlertType.CONFIRMATION);
+    alert.initModality(Modality.APPLICATION_MODAL);
+    alert.initStyle(StageStyle.DECORATED);
     alert.setContentText("Application will be stopped");
     alert.setHeaderText("Server stopped responding!");
     alert.setTitle("Critical error!");
+    ((Stage) alert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
 
-    Platform.exit(); // exit javafx application
-    System.exit(0); // program exit exit
+    final var optButton = alert.showAndWait();
+
+    optButton.ifPresent($ -> {
+      Platform.exit(); // exit javafx application
+      System.exit(1); // program exit exit
+    });
   }
 }

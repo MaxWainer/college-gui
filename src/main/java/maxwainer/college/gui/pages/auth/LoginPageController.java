@@ -1,8 +1,15 @@
 package maxwainer.college.gui.pages.auth;
 
+import static javafx.beans.binding.Bindings.isEmpty;
+
 import com.google.inject.Inject;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import maxwainer.college.gui.common.Alerts;
@@ -17,7 +24,7 @@ import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.EnumResult;
 import maxwainer.college.gui.web.result.StringResult;
 
-public class LoginPageController extends AbstractPage {
+public class LoginPageController extends AbstractAuthPage {
 
   @Inject
   private AppValues appValues;
@@ -30,6 +37,9 @@ public class LoginPageController extends AbstractPage {
 
   @FXML
   private NumericField passportIdField;
+
+  @FXML
+  private Button loginButton;
 
   @FXML
   protected void onLoginClick() {
@@ -76,17 +86,20 @@ public class LoginPageController extends AbstractPage {
         }
       }
 
-      if (result instanceof StringResult stringResult) {
-        final String token = stringResult.value();
-        appValues.accessToken(token);
-
-        Alerts.showInfo("Successful logging-in!", "Your token: " + token);
-        openPage("base-page");
-      }
+      handleResult(result);
 
     } catch (MissingPropertyException | IOException e) {
       Alerts.showException(e);
     }
   }
 
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    loginButton.disableProperty()
+        .bind(
+            isEmpty(passportIdField.textProperty())
+                .or(isEmpty(usernameField.textProperty()))
+                .or(isEmpty(passwordField.textProperty()))
+        );
+  }
 }

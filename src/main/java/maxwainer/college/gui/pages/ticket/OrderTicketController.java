@@ -31,7 +31,7 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    activeDirection.setConverter(new StringConverter<Active>() {
+    activeDirection.setConverter(new StringConverter<>() {
       @Override
       public String toString(Active object) {
         return object.mainDirection().name();
@@ -61,9 +61,7 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
       activeDirection.getItems()
           .addAll(result.value());
 
-      activeDirection.setOnAction(event -> {
-        final var newValue = activeDirection.getValue();
-
+      activeDirection.valueProperty().addListener((collection, oldValue, newValue) -> {
         // get items
         final var startItems = startStation.getItems();
         final var endItems = endStation.getItems();
@@ -85,5 +83,10 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
       throw new RuntimeException(e);
     }
 
+  }
+
+  @Override
+  protected String backPageName() {
+    return "base-page";
   }
 }

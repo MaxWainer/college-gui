@@ -7,7 +7,9 @@ import maxwainer.college.gui.web.result.Result;
 import maxwainer.college.gui.web.result.StringResult;
 import org.jetbrains.annotations.NotNull;
 
-abstract class AbstractAuthWebFetcher<T extends Enum<T>> extends AbstractWebFetcher<Result<?>> {
+public abstract sealed class AbstractAuthWebFetcher<T extends Enum<T>> extends
+    AbstractWebFetcher<Result<?>> permits ClearCacheWebFetcher, LoginWebFetcher,
+    RegisterWebFetcher {
 
   protected abstract @NotNull T resolveOrdinal(final int ordinal);
 

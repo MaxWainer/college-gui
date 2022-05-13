@@ -3,11 +3,12 @@ package maxwainer.college.gui.web;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import maxwainer.college.gui.exception.MissingPropertyException;
+import maxwainer.college.gui.web.implementation.AbstractWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.Result;
 import org.jetbrains.annotations.NotNull;
 
-public interface WebFetcher<T extends Result> {
+public sealed interface WebFetcher<T extends Result> permits AbstractWebFetcher {
 
   @NotNull CompletableFuture<T> fetchData(final @NotNull WebParameters parameters)
       throws MissingPropertyException, IOException;
