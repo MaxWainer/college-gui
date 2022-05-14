@@ -16,7 +16,8 @@ public final class ClearCacheWebFetcher extends AbstractAuthWebFetcher<ClearCach
   protected @NotNull Request buildRequest(@NotNull WebParameters parameters)
       throws MissingPropertyException, IOException {
     final var body = RequestBody.create(
-        gson.toJson(new ClearCacheModel(values.accessToken())),
+        gson.toJson(
+            new ClearCacheModel(values.accessToken())),
         MediaTypes.JSON);
 
     return routeRequest("users/User/clearCache")

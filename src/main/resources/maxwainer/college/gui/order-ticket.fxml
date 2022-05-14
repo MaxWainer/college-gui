@@ -4,18 +4,13 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<?import org.controlsfx.property.editor.AbstractObjectField?>
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18"
-  xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="maxwainer.college.gui.pages.ticket.OrderTicketController">
-  <Button layoutX="38.0" layoutY="522.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="127.0"
-    text="Back to main menu" onMouseClicked="#onBackButtonClick"/>
-  <ComboBox layoutX="248.0" layoutY="275.0" prefWidth="150.0" promptText="Active Direction"
-    fx:id="directions"/>
-  <Button layoutX="387.0" layoutY="412.0" mnemonicParsing="false" prefHeight="46.0"
-    prefWidth="127.0" text="Order ticket" fx:id="orderTicket" onMouseClicked="#onOrderTicketClick"/>
-  <ComboBox layoutX="502.0" layoutY="275.0" prefWidth="150.0" promptText="End station"
-    fx:id="endStation"/>
-  <ComboBox layoutX="502.0" layoutY="236.0" prefWidth="150.0" promptText="Start station"
-    fx:id="startStation" />
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="maxwainer.college.gui.pages.ticket.OrderTicketController">
+  <Button layoutX="38.0" layoutY="522.0" mnemonicParsing="false" onMouseClicked="#onBackButtonClick" prefHeight="46.0" prefWidth="127.0" text="Back to main menu" />
+  <ComboBox fx:id="directions" layoutX="248.0" layoutY="275.0" prefWidth="150.0" promptText="Active Direction" />
+  <Button fx:id="orderTicket" layoutX="387.0" layoutY="412.0" mnemonicParsing="false" onMouseClicked="#onOrderTicketClick" prefHeight="46.0" prefWidth="127.0" text="Order ticket" />
+  <ComboBox fx:id="endStation" layoutX="502.0" layoutY="275.0" prefWidth="150.0" promptText="End station" />
+  <ComboBox fx:id="startStation" layoutX="502.0" layoutY="236.0" prefWidth="150.0" promptText="Start station" />
+  <ComboBox fx:id="sitting" layoutX="502.0" layoutY="361.0" prefWidth="150.0" promptText="Sitting" />
+  <ComboBox fx:id="carriage" layoutX="502.0" layoutY="322.0" prefWidth="150.0" promptText="Carriage" />
+  <ComboBox fx:id="active" layoutX="248.0" layoutY="322.0" prefWidth="150.0" promptText="Date and Time" />
 </AnchorPane>

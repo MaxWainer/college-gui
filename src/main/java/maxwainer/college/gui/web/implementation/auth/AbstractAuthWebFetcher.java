@@ -24,7 +24,7 @@ public abstract sealed class AbstractAuthWebFetcher<T extends Enum<T>> extends
         .getAsJsonObject()
         .get("result"); // get result as primitive
 
-    if (result.isJsonPrimitive()) { // if it's number we have some login result (not token)
+    if (result.isJsonPrimitive() && result.getAsJsonPrimitive().isNumber()) { // if it's number we have some login result (not token)
       return new EnumResult<>(resolveOrdinal(result.getAsInt()));
     }
 

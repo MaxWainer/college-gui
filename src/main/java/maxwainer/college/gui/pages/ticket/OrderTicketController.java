@@ -19,25 +19,39 @@ import javafx.util.StringConverter;
 import maxwainer.college.gui.common.Alerts;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.object.web.Active;
+import maxwainer.college.gui.object.web.Carriage;
 import maxwainer.college.gui.object.web.Direction;
+import maxwainer.college.gui.object.web.Sitting;
 import maxwainer.college.gui.object.web.Station;
 import maxwainer.college.gui.pages.AbstractSubPage;
+import maxwainer.college.gui.web.enums.ticket.OrderTicketResult;
 import maxwainer.college.gui.web.implementation.direction.DirectionWebFetcher;
+import maxwainer.college.gui.web.implementation.ticket.OrderTicketWebFetcher;
+import maxwainer.college.gui.web.params.WebParameters;
 import org.jetbrains.annotations.NotNull;
 
 public class OrderTicketController extends AbstractSubPage implements Initializable {
 
   @FXML
-  public Button orderTicket;
+  private Button orderTicket;
 
   @FXML
-  public ComboBox<Station> endStation;
-  @FXML
-
-  public ComboBox<Station> startStation;
+  private ComboBox<Station> endStation;
 
   @FXML
-  public ComboBox<Direction> directions;
+  private ComboBox<Station> startStation;
+
+  @FXML
+  private ComboBox<Direction> directions;
+
+  @FXML
+  private ComboBox<Active> active;
+
+  @FXML
+  private ComboBox<Carriage> carriage;
+
+  @FXML
+  private ComboBox<Sitting> sitting;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -50,16 +64,16 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
       return;
     }
 
-    final var fetcher = optionalFetcher.get();
+    final var directionFetcher = optionalFetcher.get();
 
     try {
       // fetch result
-      final var result = fetcher.fetchData()
+      final var directionResult = directionFetcher.fetchData()
           .join();
 
       // add from result all values into directions combobox
       directions.getItems()
-          .addAll(result.value());
+          .addAll(directionResult.value());
 
       initPropertyListeners();
     } catch (MissingPropertyException | IOException e) {
@@ -89,17 +103,44 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
       startItems.addAll(stations);
     });
 
+    initDisableProperty();
+  }
+
+  private void initDisableProperty() {
+    // active
+    active.disableProperty()
+        .bind(isNull(directions.valueProperty()));
+
+    // start station
     startStation.valueProperty()
         .addListener((collection, oldValue, newValue) -> truncate(newValue));
+    startStation.disableProperty()
+        .bind(isNull(active.valueProperty()));
 
+    // end station
     endStation.disableProperty()
-        .bind(isNull(startStation.valueProperty()));
+        .bind(isNull(startStation.valueProperty())
+            .or(isNull(active.valueProperty())));
 
+    // carriage
+    carriage.disableProperty()
+        .bind(isNull(startStation.valueProperty())
+            .or(isNull(endStation.valueProperty())));
+
+    // sitting
+    sitting.disableProperty()
+        .bind(isNull(startStation.valueProperty())
+            .or(isNull(endStation.valueProperty()))
+            .or(isNull(carriage.valueProperty())));
+
+    // order ticket
     orderTicket.disableProperty()
         .bind(isNull(startStation.valueProperty())
             .or(isNull(endStation.valueProperty()))
             .or(isNull(directions.valueProperty()))
-        );
+            .or(isNull(active.valueProperty()))
+            .or(isNull(carriage.valueProperty()))
+            .or(isNull(sitting.valueProperty())));
   }
 
 
@@ -155,9 +196,59 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
     items.addAll(from);
   }
 
+  // c# class:
+  // public class OrderModel
+  //{
+  //    [Required] public int TrainId { get; set; }
+  //    [Required] public int CarriageId { get; set; }
+  //    [Required] public int ActiveId { get; set; }
+  //    [Required] public int PassportId { get; set; }
+  //    [Required] public int SittingId { get; set; }
+  //    [Required] public int EndStationId { get; set; }
+  //}
   @FXML
   protected void onOrderTicketClick() {
+    final var active = this.active.getValue();
 
+    final var trainId = active.trainId();
+    final var carriageId = carriage.getValue().carriageId();
+    final var activeId = active.activeId();
+    final var passportId = appValues.user().passportId();
+    final var sittingId = sitting.getValue().sitId();
+    final var endStationId = endStation.getValue().stationId();
+
+    final var optionalFetcher = webFetcherRegistry.findFetcher(OrderTicketWebFetcher.class);
+
+    if (optionalFetcher.isEmpty()) {
+      return;
+    }
+
+    final var fetcher = optionalFetcher.get();
+
+    try {
+      final var result = fetcher.fetchData(
+          WebParameters.builder()
+              .appendParam("trainId", trainId)
+              .appendParam("carriageId", carriageId)
+              .appendParam("activeId", activeId)
+              .appendParam("passportId", passportId)
+              .appendParam("sittingId", sittingId)
+              .appendParam("endStationId", endStationId)
+              .build()).join();
+
+      final var value = result.value();
+
+      if (value == OrderTicketResult.ALREADY_CREATED_OR_NOT_EXISTS) {
+        Alerts.showError("Error while ordering!", "Looks like this sitting already ordered!");
+      } else {
+        Alerts.showInfo("Success", "You are successfully ordered ticket!");
+
+        openPage("base-page");
+      }
+
+    } catch (final Throwable throwable) {
+      Alerts.showException(throwable);
+    }
 
   }
 }

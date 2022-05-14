@@ -82,6 +82,7 @@ public final class AppModule extends AbstractModule {
             )
             // Need to C# format backward support
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+            .setLenient()
             .serializeNulls()
             .create());
 

@@ -2,6 +2,7 @@ package maxwainer.college.gui.web.implementation.ticket;
 
 import com.google.gson.JsonElement;
 import java.io.IOException;
+import java.util.ArrayList;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.object.web.Ticket;
 import maxwainer.college.gui.web.implementation.AbstractWebFetcher;
@@ -15,11 +16,20 @@ public final class TicketListWebFetcher extends AbstractWebFetcher<ObjectListRes
   @Override
   protected @NotNull Request buildRequest(@NotNull WebParameters parameters)
       throws MissingPropertyException, IOException {
-    return null;
+    return routeAuthorizedRequest(
+        "ticket/Ticket/list/" + parameters.getOrThrow("passportId", int.class))
+        .build();
   }
 
   @Override
   protected @NotNull ObjectListResult<Ticket> convertElement(@NotNull JsonElement element) {
-    return null;
+    final var array = element.getAsJsonArray();
+
+    final var result = new ArrayList<Ticket>();
+    for (final var jsonElement : array) {
+      result.add(gson.fromJson(jsonElement.getAsJsonObject(), Ticket.class));
+    }
+
+    return new ObjectListResult<>(result);
   }
 }

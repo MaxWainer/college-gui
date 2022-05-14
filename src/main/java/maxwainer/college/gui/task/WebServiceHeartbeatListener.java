@@ -29,13 +29,11 @@ public final class WebServiceHeartbeatListener implements Runnable {
   @Inject
   private OkHttpClient client;
 
-  private String checkUrl;
-
   @Override
   public void run() {
     try {
       final var request = new Request.Builder()
-          .url(checkUrl())
+          .url(appConfig.baseUrl())
           .head()
           .build();
 
@@ -50,22 +48,11 @@ public final class WebServiceHeartbeatListener implements Runnable {
           exit();
         }
       }
-    } catch (MalformedURLException | MissingPropertyException e) {
+    } catch (MalformedURLException e) {
       AppLogger.LOGGER.log(Level.SEVERE, e, () -> "Error");
     } catch (IOException e) {
       exit();
     }
-  }
-
-  private @NotNull String checkUrl() throws MissingPropertyException {
-    if (this.checkUrl == null) {
-      this.checkUrl = String.format(
-          "%s/dummy/Dummy/check",
-          appConfig.baseUrl()
-      );
-    }
-
-    return this.checkUrl;
   }
 
   private void exit() {

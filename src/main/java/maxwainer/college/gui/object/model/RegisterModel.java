@@ -6,6 +6,6 @@ public record RegisterModel(
     String patronymic,
     String username,
     String password,
-    int passportId) implements UserTargetedModel {
+    int passportId) implements UserTargetedModel, WebModel {
 
 }

@@ -1,6 +1,8 @@
 package maxwainer.college.gui.web.params;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
@@ -22,9 +24,22 @@ final class WebParametersImpl implements WebParameters {
     return Collections.unmodifiableMap(rawMap);
   }
 
+  @Override
+  public <T extends Record> @NotNull T toModel(@NotNull Class<? extends T> possibleRecord) {
+    try {
+      final var constructor = possibleRecord
+          .getConstructor(rawMap.values().stream().map(Object::getClass).toArray(Class[]::new));
+
+      return constructor.newInstance(rawMap.values().toArray());
+    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+             IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   static final class BuilderImpl implements Builder {
 
-    private final Map<String, Object> rawMap = new ConcurrentHashMap<>();
+    private final Map<String, Object> rawMap = new LinkedHashMap<>();
 
     @Override
     public @NotNull WebParameters build() {

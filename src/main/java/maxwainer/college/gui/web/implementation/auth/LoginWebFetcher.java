@@ -21,14 +21,10 @@ public final class LoginWebFetcher extends AbstractAuthWebFetcher<TokenResult> {
   @Override
   protected @NotNull Request buildRequest(@NotNull WebParameters parameters)
       throws MissingPropertyException, IOException {
-    // basic credentials
-    final var username = parameters.getOrThrow("username", String.class);
-    final var password = parameters.getOrThrow("password", String.class);
-    final var passportId = parameters.getOrThrow("passportId", int.class);
 
     // define request body
     final var requestBody = RequestBody.create(
-        gson.toJson(new LoginModel(username, password, passportId)),
+        gson.toJson(parameters.toModel(LoginModel.class)),
         // deserialize model (referenced to C# LoginModel class)
         MediaTypes.JSON); // set media type to json
 

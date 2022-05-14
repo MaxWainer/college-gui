@@ -2,6 +2,7 @@ package maxwainer.college.gui.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,7 @@ public final class Alerts {
   public static void showException(final @NotNull Throwable throwable) {
     showError("Error in application!", buildError(throwable));
 
-    throwable.printStackTrace();
+    AppLogger.LOGGER.log(Level.SEVERE, throwable, () -> "An exception acquired while");
   }
 
   public static void showInfo(

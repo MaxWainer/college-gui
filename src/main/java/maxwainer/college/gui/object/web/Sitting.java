@@ -21,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 public record Sitting(
     int sitId,
     int relatedCarriageId,
+    int price,
+    @NotNull String sitType,
     @NotNull String index,
     @NotNull Carriage relatedCarriage,
     @Nullable Ticket ticket) {

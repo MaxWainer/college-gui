@@ -21,6 +21,8 @@ public sealed interface WebParameters permits WebParametersImpl {
 
   @NotNull @Unmodifiable Map<String, Object> rawMap();
 
+  <T extends Record> @NotNull T toModel(final @NotNull Class<? extends T> possibleRecord);
+
   default <T> @NotNull Optional<T> get(final @NotNull String name, final @NotNull Class<T> as) {
     return Optional.ofNullable((T) rawMap().get(name));
   }
