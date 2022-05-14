@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -47,21 +48,15 @@ public final class CollegeGuiApplication extends Application {
         throw new RuntimeException(e);
       }
     }
+
+    Platform.exit();
+    System.exit(0);
   }
 
   @Override
   public void start(Stage stage) throws IOException {
     // create injector
     this.injector = Guice.createInjector(new AppModule(stage));
-
-    // we should check is server up before the main window appears
-    // start few heartbeat service
-    final var scheduler = injector.getInstance(ScheduledExecutorService.class);
-
-    // check each second, is server down
-    scheduler.scheduleAtFixedRate(injector.getInstance(WebServiceHeartbeatListener.class),
-        0, 1,
-        TimeUnit.MILLISECONDS);
 
     // main application entry
 
@@ -84,14 +79,15 @@ public final class CollegeGuiApplication extends Application {
     // show it
     stage.setScene(scene);
     stage.show();
+    stage.centerOnScreen();
 
-    stage.setOnCloseRequest(event -> {
-      try {
-        stop();
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    });
+    // start few heartbeat service
+    final var scheduler = injector.getInstance(ScheduledExecutorService.class);
+
+    // check each second, is server down
+    scheduler.scheduleAtFixedRate(injector.getInstance(WebServiceHeartbeatListener.class),
+        TimeUnit.SECONDS.toMillis(3), 1,
+        TimeUnit.MILLISECONDS);
   }
 
   public static void main(String[] args) {

@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 
 <?import maxwainer.college.gui.layout.NumericField?>
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="maxwainer.college.gui.pages.auth.RegisterPageController">
-  <Button layoutX="401.0" layoutY="362.0" mnemonicParsing="false" onMouseClicked="#onRegisterClick" prefHeight="50.0" prefWidth="100.0" text="Register" fx:id="registerButton"/>
-  <PasswordField layoutX="377.0" layoutY="271.0" promptText="Enter your password..." fx:id="firstPasswordField"/>
-  <PasswordField layoutX="377.0" layoutY="307.0" promptText="Repeat your password..." fx:id="repeatPasswordField"/>
-  <TextField layoutX="469.0" layoutY="188.0" promptText="Enter username..." fx:id="usernameField"/>
-  <TextField layoutX="208.0" layoutY="232.0" promptText="Enter first name..." fx:id="firstNameField"/>
-  <TextField layoutX="377.0" layoutY="232.0" promptText="Enter second name..." fx:id="secondNameField"/>
-  <TextField layoutX="543.0" layoutY="232.0" promptText="Enter patronymic..." fx:id="patronymicField"/>
-  <NumericField layoutX="283.0" layoutY="188.0" promptText="Enter passport id..." fx:id="passportIdField"/>
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="maxwainer.college.gui.pages.auth.RegisterPageController">
+  <Button fx:id="registerButton" layoutX="401.0" layoutY="362.0" mnemonicParsing="false"
+    onMouseClicked="#onRegisterClick" prefHeight="50.0" prefWidth="100.0" text="Register"/>
+  <PasswordField fx:id="firstPasswordField" layoutX="377.0" layoutY="271.0"
+    promptText="Enter your password..."/>
+  <PasswordField fx:id="repeatPasswordField" layoutX="377.0" layoutY="307.0"
+    promptText="Repeat your password..."/>
+  <TextField fx:id="usernameField" layoutX="469.0" layoutY="188.0" promptText="Enter username..."/>
+  <TextField fx:id="firstNameField" layoutX="208.0" layoutY="232.0"
+    promptText="Enter first name..."/>
+  <TextField fx:id="secondNameField" layoutX="377.0" layoutY="232.0"
+    promptText="Enter second name..."/>
+  <TextField fx:id="patronymicField" layoutX="543.0" layoutY="232.0"
+    promptText="Enter patronymic..."/>
+  <NumericField layoutX="283.0" layoutY="188.0" promptText="Enter passport id..."
+    fx:id="passportIdField"/>
+
+  <Button layoutX="14.0" layoutY="536.0" mnemonicParsing="false" onMouseClicked="#onBackButtonClick"
+    prefHeight="50.0" prefWidth="119.0" text="Back to main menu"/>
 </AnchorPane>

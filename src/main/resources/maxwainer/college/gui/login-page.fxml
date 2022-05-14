@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 
 <?import maxwainer.college.gui.layout.NumericField?>
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16"
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18"
   xmlns:fx="http://javafx.com/fxml/1"
   fx:controller="maxwainer.college.gui.pages.auth.LoginPageController">
-  <Button layoutX="401.0" layoutY="334.0" mnemonicParsing="false" onMouseClicked="#onLoginClick"
-    prefHeight="50.0" prefWidth="100.0" text="Log-in" fx:id="loginButton"/>
-  <PasswordField layoutX="377.0" layoutY="275.0" promptText="Enter your password..."
-    fx:id="passwordField"/>
-  <TextField layoutX="377.0" layoutY="235.0" promptText="Enter username..." fx:id="usernameField"/>
+  <Button fx:id="loginButton" layoutX="401.0" layoutY="334.0" mnemonicParsing="false"
+    onMouseClicked="#onLoginClick" prefHeight="50.0" prefWidth="100.0" text="Log-in"/>
+  <PasswordField fx:id="passwordField" layoutX="377.0" layoutY="275.0"
+    promptText="Enter your password..."/>
+  <TextField fx:id="usernameField" layoutX="377.0" layoutY="235.0" promptText="Enter username..."/>
   <NumericField layoutX="377.0" layoutY="197.0" promptText="Enter passport id..."
     fx:id="passportIdField"/>
+  <Button layoutX="14.0" layoutY="536.0" mnemonicParsing="false" onMouseClicked="#onBackButtonClick"
+    prefHeight="50.0" prefWidth="119.0" text="Back to main menu"/>
 </AnchorPane>

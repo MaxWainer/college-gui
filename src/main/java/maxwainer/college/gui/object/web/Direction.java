@@ -1,6 +1,7 @@
 package maxwainer.college.gui.object.web;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import org.jetbrains.annotations.NotNull;
 
 // c# class:
@@ -28,7 +29,7 @@ public record Direction(
     int startStationId,
     @NotNull String name,
     @NotNull Collection<Active> actives,
-    @NotNull Collection<Station> stations,
+    @NotNull LinkedList<Station> stations,
     @NotNull Collection<Ticket> tickets) {
 
 }

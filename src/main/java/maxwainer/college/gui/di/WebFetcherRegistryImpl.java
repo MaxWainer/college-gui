@@ -11,6 +11,7 @@ import maxwainer.college.gui.web.implementation.active.ActiveListWebFetcher;
 import maxwainer.college.gui.web.implementation.auth.ClearCacheWebFetcher;
 import maxwainer.college.gui.web.implementation.auth.LoginWebFetcher;
 import maxwainer.college.gui.web.implementation.auth.RegisterWebFetcher;
+import maxwainer.college.gui.web.implementation.direction.DirectionWebFetcher;
 import maxwainer.college.gui.web.implementation.ticket.TicketListWebFetcher;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,6 +25,7 @@ final class WebFetcherRegistryImpl implements WebFetcherRegistry {
     registerFetcher(new ActiveListWebFetcher());
     registerFetcher(new ClearCacheWebFetcher());
     registerFetcher(new TicketListWebFetcher());
+    registerFetcher(new DirectionWebFetcher());
   }
 
   @Override

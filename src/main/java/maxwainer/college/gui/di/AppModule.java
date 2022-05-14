@@ -61,7 +61,7 @@ public final class AppModule extends AbstractModule {
       final OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
           .retryOnConnectionFailure(true);
 
-      if (config.checkConnectionCertificate()) {
+      if (!config.checkConnectionCertificate()) {
         disableCertification(clientBuilder);
       }
 

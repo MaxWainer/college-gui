@@ -10,6 +10,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import maxwainer.college.gui.CollegeGuiApplication;
 import maxwainer.college.gui.common.AppLogger;
 import maxwainer.college.gui.config.AppConfig;
 import maxwainer.college.gui.exception.MissingPropertyException;
@@ -18,6 +19,9 @@ import okhttp3.Request;
 import org.jetbrains.annotations.NotNull;
 
 public final class WebServiceHeartbeatListener implements Runnable {
+
+  @Inject
+  private Stage primaryStage;
 
   @Inject
   private AppConfig appConfig;
@@ -64,22 +68,21 @@ public final class WebServiceHeartbeatListener implements Runnable {
     return this.checkUrl;
   }
 
-  private static void exit() {
+  private void exit() {
     AppLogger.LOGGER.severe("Server is down! Stopping application...");
 
-    final var alert = new Alert(AlertType.CONFIRMATION);
-    alert.initModality(Modality.APPLICATION_MODAL);
-    alert.initStyle(StageStyle.DECORATED);
-    alert.setContentText("Application will be stopped");
-    alert.setHeaderText("Server stopped responding!");
-    alert.setTitle("Critical error!");
-    ((Stage) alert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
+//    final var alert = new Alert(AlertType.ERROR);
+//    alert.setContentText("Application will be stopped");
+//    alert.setHeaderText("Server stopped responding!");
+//    alert.setTitle("Critical error!");
+//
+//    alert.show();
 
-    final var optButton = alert.showAndWait();
 
-    optButton.ifPresent($ -> {
-      Platform.exit(); // exit javafx application
-      System.exit(1); // program exit exit
-    });
+    primaryStage.setScene(null);
+    // System.exit(1); // program exit exit
+    Platform.exit(); // exit javafx application
+
+    throw new RuntimeException("Unreachable");
   }
 }

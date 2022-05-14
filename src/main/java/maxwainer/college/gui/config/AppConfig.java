@@ -32,7 +32,7 @@ public final class AppConfig {
 
   public boolean checkConnectionCertificate() {
     try {
-      return getOrThrow("check-connection-certificate", Boolean.class);
+      return Boolean.parseBoolean(getOrThrow("check-connection-certificate", String.class));
     } catch (MissingPropertyException e) {
       return false;
     }
