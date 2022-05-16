@@ -28,7 +28,7 @@ public final class LoginWebFetcher extends AbstractAuthWebFetcher<TokenResult> {
         // deserialize model (referenced to C# LoginModel class)
         MediaTypes.JSON); // set media type to json
 
-    return routeRequest("users/User/loginUser")
+    return makeRequest("users/User/loginUser")
         .post(requestBody) // set to post request body
         .build();
   }

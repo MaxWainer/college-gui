@@ -2,35 +2,44 @@ package maxwainer.college.gui.pages.ticket;
 
 import static javafx.beans.binding.Bindings.isNull;
 
+import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.function.Predicate;
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ObservableListValue;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.util.StringConverter;
 import maxwainer.college.gui.common.Alerts;
+import maxwainer.college.gui.common.MethodVisitorCellValueFactory;
+import maxwainer.college.gui.common.MoreFormats;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.object.web.Active;
 import maxwainer.college.gui.object.web.Carriage;
 import maxwainer.college.gui.object.web.Direction;
 import maxwainer.college.gui.object.web.Sitting;
 import maxwainer.college.gui.object.web.Station;
+import maxwainer.college.gui.object.web.Train;
 import maxwainer.college.gui.pages.AbstractSubPage;
 import maxwainer.college.gui.web.enums.ticket.OrderTicketResult;
-import maxwainer.college.gui.web.implementation.direction.DirectionWebFetcher;
+import maxwainer.college.gui.web.implementation.direction.DirectionListWebFetcher;
 import maxwainer.college.gui.web.implementation.ticket.OrderTicketWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
 import org.jetbrains.annotations.NotNull;
 
 public class OrderTicketController extends AbstractSubPage implements Initializable {
+
+  @Inject
+  private OrderTicketWebFetcher orderFetcher;
+
+  @Inject
+  private DirectionListWebFetcher directionFetcher;
 
   @FXML
   private Button orderTicket;
@@ -39,32 +48,39 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
   private ComboBox<Station> endStation;
 
   @FXML
-  private ComboBox<Station> startStation;
-
-  @FXML
   private ComboBox<Direction> directions;
 
   @FXML
   private ComboBox<Active> active;
 
   @FXML
-  private ComboBox<Carriage> carriage;
+  private ListView<Carriage> carriages;
 
   @FXML
-  private ComboBox<Sitting> sitting;
+  public ListView<Train> trains;
+
+  // view properties start
+
+  @FXML
+  private TableView<Sitting> sittingView;
+
+  @FXML
+  private TableColumn<Sitting, Integer> priceColumn;
+
+  @FXML
+  private TableColumn<Sitting, String> statusColumn;
+
+  @FXML
+  private TableColumn<Sitting, String> sittingTypeColumn;
+
+  @FXML
+  private TableColumn<Sitting, String> sittingIndexColumn;
+
+  // view properties end
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initConverters();
-
-    final var optionalFetcher = webFetcherRegistry.findFetcher(DirectionWebFetcher.class);
-
-    if (optionalFetcher.isEmpty()) {
-      Alerts.showError("Error while processing!", "Fetcher is not present!");
-      return;
-    }
-
-    final var directionFetcher = optionalFetcher.get();
 
     try {
       // fetch result
@@ -88,20 +104,76 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
   }
 
   private void initPropertyListeners() {
-    directions.valueProperty().addListener((collection, oldValue, newValue) -> {
+    directions.valueProperty().addListener((__, ___, value) -> {
+      if (value == null) return;
+
       // get items
-      final var startItems = startStation.getItems();
+      final var activeItems = active.getItems();
 
       // cleat them
-      startItems.clear();
-
-      // get all stations from new value
-      final var stations = newValue
-          .stations(); // from direction
+      activeItems.clear();
 
       // fill up with new data
-      startItems.addAll(stations);
+      activeItems.addAll(value.actives());
     });
+
+    active.valueProperty().addListener((__, ___, value) -> {
+      // get items
+      final var stationItems = endStation.getItems();
+
+      // carriage
+      final var trainsItems = trains.getItems();
+
+      // cleat them
+      stationItems.clear();
+      trainsItems.clear();
+
+      if (value == null) return;
+
+      final var station = value.station();
+
+      // do everything what we need
+      truncate(station);
+
+      trainsItems.add(value.train());
+    });
+
+    var trainsModel = trains.getSelectionModel();
+
+    trainsModel.setSelectionMode(SelectionMode.SINGLE);
+    trainsModel.selectedItemProperty().addListener((__, ___, value) -> {
+
+      // get items
+      final var carriageItems = carriages.getItems();
+
+      // clear them
+      carriageItems.clear();
+
+      if (value == null) return;
+
+      // add all of them
+      carriageItems.addAll(value.carriages());
+    });
+
+    // user can select only 1 carriage at 1 time
+    var carriagesModel = carriages.getSelectionModel();
+
+    carriagesModel.setSelectionMode(SelectionMode.SINGLE);
+    carriagesModel.selectedItemProperty().addListener((__, ___, value) -> {
+      // get items
+      final var sittingItems = sittingView.getItems();
+
+      // clear them
+      sittingItems.clear();
+
+      if (value == null) return;
+
+      // add all of them
+      sittingItems.addAll(value.sittingsFiltered());
+    });
+
+    // user can select only 1 sitting at 1 time
+    sittingView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
     initDisableProperty();
   }
@@ -111,36 +183,29 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
     active.disableProperty()
         .bind(isNull(directions.valueProperty()));
 
-    // start station
-    startStation.valueProperty()
-        .addListener((collection, oldValue, newValue) -> truncate(newValue));
-    startStation.disableProperty()
-        .bind(isNull(active.valueProperty()));
-
     // end station
     endStation.disableProperty()
-        .bind(isNull(startStation.valueProperty())
-            .or(isNull(active.valueProperty())));
+        .bind(isNull(active.valueProperty()));
 
     // carriage
-    carriage.disableProperty()
-        .bind(isNull(startStation.valueProperty())
-            .or(isNull(endStation.valueProperty())));
+    carriages.disableProperty()
+        .bind(isNull(endStation.valueProperty())
+            .or(isNull(trains.selectionModelProperty())));
 
     // sitting
-    sitting.disableProperty()
-        .bind(isNull(startStation.valueProperty())
-            .or(isNull(endStation.valueProperty()))
-            .or(isNull(carriage.valueProperty())));
+    sittingView.disableProperty()
+        .bind(isNull(endStation.valueProperty())
+            .or(isNull(carriages.selectionModelProperty()))
+            .or(isNull(trains.selectionModelProperty())));
 
     // order ticket
     orderTicket.disableProperty()
-        .bind(isNull(startStation.valueProperty())
-            .or(isNull(endStation.valueProperty()))
+        .bind(isNull(endStation.valueProperty())
             .or(isNull(directions.valueProperty()))
             .or(isNull(active.valueProperty()))
-            .or(isNull(carriage.valueProperty()))
-            .or(isNull(sitting.valueProperty())));
+            .or(isNull(carriages.selectionModelProperty()))
+            .or(isNull(sittingView.selectionModelProperty()))
+            .or(isNull(trains.selectionModelProperty())));
   }
 
 
@@ -157,14 +222,14 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
       }
     });
 
-    startStation.setConverter(new StringConverter<>() {
+    active.setConverter(new StringConverter<>() {
       @Override
-      public String toString(Station object) {
-        return object.name();
+      public String toString(Active object) {
+        return object.station().name() + ' ' + MoreFormats.formatTime(object.startDateTime());
       }
 
       @Override
-      public Station fromString(String string) {
+      public Active fromString(String string) {
         return null;
       }
     });
@@ -180,53 +245,73 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
         return null;
       }
     });
+
+    trains.setCellFactory(param -> new ListCell<>() {
+      @Override
+      protected void updateItem(Train item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (item != null) {
+          setText(item.name());
+        }
+      }
+    });
+
+    carriages.setCellFactory(param -> new ListCell<>() {
+      @Override
+      protected void updateItem(Carriage item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (item != null) {
+          setText(item.index());
+        }
+      }
+    });
+
+    initViewColumns();
   }
 
   private void truncate(final @NotNull Station start) {
+    // get selected direction
     final var direction = directions.getValue();
 
     final var from = direction.stations()
         .stream()
+        // as far as everything is ordered, we can do this :)
         .dropWhile(station -> station.stationId() <= start.stationId())
         .toList();
 
+    // get items
     final var items = endStation.getItems();
 
+    // clear
     items.clear();
+
+    // add all of them
     items.addAll(from);
   }
 
-  // c# class:
-  // public class OrderModel
-  //{
-  //    [Required] public int TrainId { get; set; }
-  //    [Required] public int CarriageId { get; set; }
-  //    [Required] public int ActiveId { get; set; }
-  //    [Required] public int PassportId { get; set; }
-  //    [Required] public int SittingId { get; set; }
-  //    [Required] public int EndStationId { get; set; }
-  //}
+  private void initViewColumns() {
+    priceColumn.setCellValueFactory(new MethodVisitorCellValueFactory<>(Sitting::price));
+    sittingIndexColumn.setCellValueFactory(new MethodVisitorCellValueFactory<>(Sitting::index));
+    sittingTypeColumn.setCellValueFactory(new MethodVisitorCellValueFactory<>(Sitting::sitType));
+    statusColumn.setCellValueFactory(new MethodVisitorCellValueFactory<>(
+        sitting -> sitting.notToken() ? "Available" : "Already taken"));
+  }
+
   @FXML
   protected void onOrderTicketClick() {
-    final var active = this.active.getValue();
+    final var selectedActive = active.getValue();
 
-    final var trainId = active.trainId();
-    final var carriageId = carriage.getValue().carriageId();
-    final var activeId = active.activeId();
+    final var trainId = selectedActive.trainId();
+    final var carriageId = carriages.getSelectionModel().getSelectedItem().carriageId();
+    final var activeId = selectedActive.activeId();
     final var passportId = appValues.user().passportId();
-    final var sittingId = sitting.getValue().sitId();
+    final var sittingId = sittingView.getSelectionModel().getSelectedItem().sitId();
     final var endStationId = endStation.getValue().stationId();
 
-    final var optionalFetcher = webFetcherRegistry.findFetcher(OrderTicketWebFetcher.class);
-
-    if (optionalFetcher.isEmpty()) {
-      return;
-    }
-
-    final var fetcher = optionalFetcher.get();
-
     try {
-      final var result = fetcher.fetchData(
+      final var result = orderFetcher.fetchData(
           WebParameters.builder()
               .appendParam("trainId", trainId)
               .appendParam("carriageId", carriageId)
@@ -251,4 +336,5 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
     }
 
   }
+
 }

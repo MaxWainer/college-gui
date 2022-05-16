@@ -27,5 +27,4 @@ public record User(
     @NotNull String username,
     @NotNull String role,
     @NotNull Collection<Ticket> tickets) {
-
 }

@@ -5,6 +5,7 @@ public sealed interface WebModel permits
     RegisterModel,
     OrderTicketModel,
     LoginModel,
-    ClearCacheModel {
+    ClearCacheModel,
+    MultiTicketDeleteModel {
 
 }

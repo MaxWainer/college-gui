@@ -15,9 +15,7 @@ import maxwainer.college.gui.common.AppLogger;
 import maxwainer.college.gui.common.MoreResources;
 import maxwainer.college.gui.di.AppModule;
 import maxwainer.college.gui.exception.MissingPropertyException;
-import maxwainer.college.gui.task.WebServiceHeartbeatListener;
 import maxwainer.college.gui.values.AppValues;
-import maxwainer.college.gui.web.WebFetcherRegistry;
 import maxwainer.college.gui.web.implementation.auth.ClearCacheWebFetcher;
 
 public final class CollegeGuiApplication extends Application {
@@ -31,16 +29,8 @@ public final class CollegeGuiApplication extends Application {
     if (values.accessTokenNotPresent()) {
       AppLogger.LOGGER.info(() -> "Token not found!");
     } else {
-      final var webFetcherRegistry = injector
-          .getInstance(WebFetcherRegistry.class);
-      final var optionalFetcher = webFetcherRegistry
-          .findFetcher(ClearCacheWebFetcher.class);
-
-      if (optionalFetcher.isEmpty()) {
-        throw new UnsupportedOperationException();
-      }
-
-      final var fetcher = optionalFetcher.get();
+      final var fetcher = injector
+          .getInstance(ClearCacheWebFetcher.class);
 
       try {
         AppLogger.LOGGER.info("Clear cache result: " + fetcher.fetchData().join());
@@ -49,12 +39,21 @@ public final class CollegeGuiApplication extends Application {
       }
     }
 
+    System.exit(1);
     Platform.exit();
-    System.exit(0);
   }
 
   @Override
   public void start(Stage stage) throws IOException {
+    Platform.setImplicitExit(true);
+    stage.setOnCloseRequest((__) -> {
+      try {
+        stop();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+
     // create injector
     this.injector = Guice.createInjector(new AppModule(stage));
 
@@ -68,6 +67,7 @@ public final class CollegeGuiApplication extends Application {
 
     // set scene
     final var scene = new Scene(content, 900, 600);
+
     stage.setTitle("Trains - By Ilya Koreysha");
 
     // lock screen
@@ -85,9 +85,9 @@ public final class CollegeGuiApplication extends Application {
     final var scheduler = injector.getInstance(ScheduledExecutorService.class);
 
     // check each second, is server down
-    scheduler.scheduleAtFixedRate(injector.getInstance(WebServiceHeartbeatListener.class),
-        TimeUnit.SECONDS.toMillis(3), 1,
-        TimeUnit.MILLISECONDS);
+//    scheduler.scheduleAtFixedRate(injector.getInstance(WebServiceHeartbeatListener.class),
+//        TimeUnit.SECONDS.toMillis(3), 1,
+//        TimeUnit.MILLISECONDS);
   }
 
   public static void main(String[] args) {

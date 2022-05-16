@@ -20,7 +20,7 @@ public final class ClearCacheWebFetcher extends AbstractAuthWebFetcher<ClearCach
             new ClearCacheModel(values.accessToken())),
         MediaTypes.JSON);
 
-    return routeRequest("users/User/clearCache")
+    return makeRequest("users/User/clearCache")
         .post(body)
         .addHeader("Authorization", "bearer " + values.accessToken())
         .build();

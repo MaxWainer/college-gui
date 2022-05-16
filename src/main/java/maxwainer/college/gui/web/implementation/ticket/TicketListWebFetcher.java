@@ -16,8 +16,9 @@ public final class TicketListWebFetcher extends AbstractWebFetcher<ObjectListRes
   @Override
   protected @NotNull Request buildRequest(@NotNull WebParameters parameters)
       throws MissingPropertyException, IOException {
-    return routeAuthorizedRequest(
+    return makeAuthorizedRequest(
         "ticket/Ticket/list/" + parameters.getOrThrow("passportId", int.class))
+        .get()
         .build();
   }
 

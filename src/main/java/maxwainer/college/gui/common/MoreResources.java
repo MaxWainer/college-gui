@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public final class MoreResources {
 
   private MoreResources() {
-    throw new AssertionError();
+    MoreExceptions.instantiationError();
   }
 
   public static @NotNull InputStream loadFxmlFile(final @NotNull String url) {

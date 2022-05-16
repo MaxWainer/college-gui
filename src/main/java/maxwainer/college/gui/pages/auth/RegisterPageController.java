@@ -2,6 +2,7 @@ package maxwainer.college.gui.pages.auth;
 
 import static javafx.beans.binding.Bindings.isEmpty;
 
+import com.google.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -17,6 +18,9 @@ import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.EnumResult;
 
 public class RegisterPageController extends AbstractAuthPage implements Initializable {
+
+  @Inject
+  private RegisterWebFetcher fetcher;
 
   @FXML
   private PasswordField firstPasswordField;
@@ -59,16 +63,6 @@ public class RegisterPageController extends AbstractAuthPage implements Initiali
     final var username = usernameField.getText();
 
     final var passportId = passportIdField.getValue();
-
-    final var optional = webFetcherRegistry.findFetcher(RegisterWebFetcher.class);
-
-    if (optional.isEmpty()) {
-      Alerts.showError("Internal error, contact developer!",
-          "Developer information: 'Auth fetcher is not present!'");
-      return;
-    }
-
-    final var fetcher = optional.get();
 
     try {
       final var webParams = WebParameters.builder()

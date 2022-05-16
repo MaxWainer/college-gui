@@ -2,11 +2,11 @@ package maxwainer.college.gui.web.implementation;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ForkJoinPool;
 import maxwainer.college.gui.common.AppLogger;
 import maxwainer.college.gui.config.AppConfig;
 import maxwainer.college.gui.exception.MissingPropertyException;
@@ -14,7 +14,8 @@ import maxwainer.college.gui.values.AppValues;
 import maxwainer.college.gui.web.WebFetcher;
 import maxwainer.college.gui.web.implementation.active.ActiveListWebFetcher;
 import maxwainer.college.gui.web.implementation.auth.AbstractAuthWebFetcher;
-import maxwainer.college.gui.web.implementation.direction.DirectionWebFetcher;
+import maxwainer.college.gui.web.implementation.direction.DirectionListWebFetcher;
+import maxwainer.college.gui.web.implementation.ticket.MultiTicketRemoveWebFetcher;
 import maxwainer.college.gui.web.implementation.ticket.OrderTicketWebFetcher;
 import maxwainer.college.gui.web.implementation.ticket.TicketListWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
@@ -24,11 +25,14 @@ import okhttp3.Request;
 import org.jetbrains.annotations.NotNull;
 
 public abstract sealed class AbstractWebFetcher<T extends Result> implements WebFetcher<T> permits
-    ActiveListWebFetcher, TicketListWebFetcher, AbstractAuthWebFetcher, DirectionWebFetcher,
-    OrderTicketWebFetcher {
+    ActiveListWebFetcher, TicketListWebFetcher, AbstractAuthWebFetcher, DirectionListWebFetcher,
+    OrderTicketWebFetcher, MultiTicketRemoveWebFetcher {
 
   @Inject
   protected OkHttpClient client;
+
+  @Inject
+  protected ForkJoinPool dataFetcherPool;
 
   @Inject
   protected Gson gson;
@@ -59,16 +63,17 @@ public abstract sealed class AbstractWebFetcher<T extends Result> implements Web
               }
 
               final var rawJson = body.string(); // get raw json
-              final var jsonElement = JsonParser.parseString(rawJson);
 
               AppLogger.LOGGER.info(() -> "Received body: " + rawJson);
+
+              final var jsonElement = gson.fromJson(rawJson, JsonElement.class);
 
               return convertElement(jsonElement);
             }
           } catch (IOException e) {
             throw new CompletionException(e);
           }
-        });
+        }, dataFetcherPool);
   }
 
   protected abstract @NotNull Request buildRequest(final @NotNull WebParameters parameters)
@@ -76,7 +81,7 @@ public abstract sealed class AbstractWebFetcher<T extends Result> implements Web
 
   protected abstract @NotNull T convertElement(final @NotNull JsonElement element);
 
-  protected Request.Builder routeRequest(final @NotNull String subPath)
+  protected Request.Builder makeRequest(final @NotNull String subPath)
       throws MissingPropertyException {
     final var url = String.format("%s/%s", // set login route
         config.baseUrl(), // define base url
@@ -91,9 +96,9 @@ public abstract sealed class AbstractWebFetcher<T extends Result> implements Web
         .addHeader("Connection", "close");
   }
 
-  protected Request.Builder routeAuthorizedRequest(final @NotNull String subPath)
+  protected Request.Builder makeAuthorizedRequest(final @NotNull String subPath)
       throws MissingPropertyException {
-    return routeRequest(subPath)
+    return makeRequest(subPath)
         .addHeader("Authorization", "bearer " + values.accessToken());
   }
 }

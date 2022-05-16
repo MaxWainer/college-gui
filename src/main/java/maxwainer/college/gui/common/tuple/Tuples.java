@@ -1,11 +1,12 @@
 package maxwainer.college.gui.common.tuple;
 
+import maxwainer.college.gui.common.MoreExceptions;
 import org.jetbrains.annotations.NotNull;
 
 public final class Tuples {
 
   private Tuples() {
-    throw new AssertionError();
+    MoreExceptions.instantiationError();
   }
 
   public static <K, V> @NotNull Tuple2<K, V> of(final K key, final V value) {

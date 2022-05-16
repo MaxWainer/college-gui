@@ -1,41 +1,66 @@
 package maxwainer.college.gui.pages.ticket;
 
+import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
-import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.util.Callback;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import maxwainer.college.gui.common.Alerts;
+import maxwainer.college.gui.common.MethodVisitorCellValueFactory;
+import maxwainer.college.gui.common.MoreFormats;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.object.web.Ticket;
 import maxwainer.college.gui.pages.AbstractSubPage;
+import maxwainer.college.gui.web.implementation.ticket.MultiTicketRemoveWebFetcher;
 import maxwainer.college.gui.web.implementation.ticket.TicketListWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
-import org.jetbrains.annotations.NotNull;
 
 public class ListTicketsController extends AbstractSubPage implements Initializable {
 
+  @Inject
+  private TicketListWebFetcher ticketListWebFetcher;
+
+  @Inject
+  private MultiTicketRemoveWebFetcher multiTicketRemoveWebFetcher;
+
+  // table view
+  // start
+
   @FXML
-  private ListView<Ticket> ticketList;
+  private TableView<Ticket> ticketList;
+
+  @FXML
+  private TableColumn<Ticket, String> sittingIndexColumn;
+
+  @FXML
+  private TableColumn<Ticket, String> sittingTypeColumn;
+
+  @FXML
+  private TableColumn<Ticket, String> carriageColumn;
+
+  @FXML
+  private TableColumn<Ticket, String> trainColumn;
+
+  @FXML
+  private TableColumn<Ticket, String> endStationColumn;
+
+  @FXML
+  private TableColumn<Ticket, String> timeColumn;
+
+  @FXML
+  private TableColumn<Ticket, String> directionColumn;
+
+  // end
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    final var optionalFetcher = webFetcherRegistry.findFetcher(TicketListWebFetcher.class);
-
-    if (optionalFetcher.isEmpty()) {
-      return;
-    }
-
-    ticketList.setCellFactory(TicketCellFactory.INSTANCE);
-
-    final var fetcher = optionalFetcher.get();
+    initColumns();
 
     try {
-      final var result = fetcher.fetchData(
+      final var result = ticketListWebFetcher.fetchData(
           WebParameters.builder()
               .appendParam("passportId", appValues.user().passportId())
               .build()
@@ -54,44 +79,47 @@ public class ListTicketsController extends AbstractSubPage implements Initializa
     return "base-page";
   }
 
-  private static final class TicketCellFactory implements
-      Callback<ListView<Ticket>, ListCell<Ticket>> {
+  private void initColumns() {
+    sittingIndexColumn.setCellValueFactory(
+        new MethodVisitorCellValueFactory<>(ticket -> ticket.sitting().index()));
 
-    static final TicketCellFactory INSTANCE = new TicketCellFactory();
+    sittingTypeColumn.setCellValueFactory(
+        new MethodVisitorCellValueFactory<>(ticket -> ticket.sitting().sitType()));
 
-    private TicketCellFactory() {
+    carriageColumn.setCellValueFactory(
+        new MethodVisitorCellValueFactory<>(ticket -> ticket.sitting().relatedCarriage().index()));
+
+    trainColumn.setCellValueFactory(
+        new MethodVisitorCellValueFactory<>(ticket -> ticket.relatedActive().train().name()));
+
+    endStationColumn.setCellValueFactory(
+        new MethodVisitorCellValueFactory<>(ticket -> ticket.endStation().name()));
+
+    timeColumn.setCellValueFactory(
+        new MethodVisitorCellValueFactory<>(
+            ticket -> MoreFormats.formatTime(ticket.relatedActive().startDateTime())));
+
+    directionColumn.setCellValueFactory(
+        new MethodVisitorCellValueFactory<>(ticket -> ticket.relatedDirection().name()));
+  }
+
+  @FXML
+  public void onRemoveOrder() {
+    final var items = ticketList.getSelectionModel().getSelectedItems();
+
+    final var rawItems = items.stream()
+        .map(Ticket::ticketId)
+        .toArray(Integer[]::new);
+
+    try {
+      final var result = multiTicketRemoveWebFetcher.fetchData(WebParameters.builder()
+          .appendParam("ticketIds", rawItems)
+          .build());
+
+
+    } catch (MissingPropertyException | IOException e) {
+      Alerts.showException(e);
     }
 
-    @Override
-    public ListCell<Ticket> call(ListView<Ticket> param) {
-      return new ListCell<>() {
-        @Override
-        protected void updateItem(Ticket item, boolean empty) {
-          super.updateItem(item, empty);
-
-          if (!empty || item != null) {
-            setText(formatTicket(item));
-          }
-        }
-      };
-    }
-
-    private static String formatTicket(final @NotNull Ticket item) {
-      final var direction = item.relatedDirection();
-      final var endStation = item.endStation();
-      final var date = item.startDate();
-      final var sitting = item.sitting();
-      final var carriage = sitting.relatedCarriage();
-
-      return direction.name()
-          + ' '
-          + endStation.name()
-          + " (" + date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ") "
-          + "(Поезд: " + carriage.relatedTrain().name()
-          + " / Вагон: " + carriage.index()
-          + " / Место: "
-          + sitting.index() + " [" + sitting.sitType() + "]"
-          + ")";
-    }
   }
 }

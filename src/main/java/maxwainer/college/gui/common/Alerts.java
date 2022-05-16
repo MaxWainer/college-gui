@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public final class Alerts {
 
   private Alerts() {
-    throw new AssertionError();
+    MoreExceptions.instantiationError();
   }
 
   public static void showException(final @NotNull Throwable throwable) {

@@ -32,7 +32,7 @@ public record Ticket(
     @NotNull Station endStation,
     @Nullable User passport,
     @NotNull Active relatedActive,
-    @NotNull Sitting sitting,
+    @Nullable Sitting sitting,
     @NotNull Direction relatedDirection) {
 
 }

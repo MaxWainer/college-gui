@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.function.UnaryOperator;
 import maxwainer.college.gui.common.Buildable;
 import maxwainer.college.gui.exception.MissingPropertyException;
+import maxwainer.college.gui.object.model.WebModel;
 import maxwainer.college.gui.web.params.WebParametersImpl.BuilderImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -21,7 +22,12 @@ public sealed interface WebParameters permits WebParametersImpl {
 
   @NotNull @Unmodifiable Map<String, Object> rawMap();
 
-  <T extends Record> @NotNull T toModel(final @NotNull Class<? extends T> possibleRecord);
+  default <T extends Record & WebModel> @NotNull T toModel(final @NotNull Class<? extends T> possibleRecord) {
+    return toModel(possibleRecord, true);
+  }
+
+  <T extends Record> @NotNull T toModel(final @NotNull Class<? extends T> possibleRecord,
+      final boolean unboxPrimitives);
 
   default <T> @NotNull Optional<T> get(final @NotNull String name, final @NotNull Class<T> as) {
     return Optional.ofNullable((T) rawMap().get(name));

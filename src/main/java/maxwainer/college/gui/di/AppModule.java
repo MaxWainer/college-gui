@@ -10,7 +10,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javax.net.ssl.SSLContext;
@@ -59,6 +61,7 @@ public final class AppModule extends AbstractModule {
     // start
     try {
       final OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+          .connectTimeout(10, TimeUnit.MINUTES)
           .retryOnConnectionFailure(true);
 
       if (!config.checkConnectionCertificate()) {
@@ -82,7 +85,7 @@ public final class AppModule extends AbstractModule {
             )
             // Need to C# format backward support
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
-            .setLenient()
+            //.setLenient()
             .serializeNulls()
             .create());
 
@@ -93,10 +96,18 @@ public final class AppModule extends AbstractModule {
     this.bind(WebFetcherRegistry.class).toInstance(webFetcherRegistry);
 
     // scheduler services
+
+    final var availableProcessors = Runtime.getRuntime().availableProcessors();
+
     bind(ScheduledExecutorService.class)
         .toInstance(
-            Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(),
+            Executors.newScheduledThreadPool(availableProcessors,
                 ThreadFactories.createFactory("internal-application-service-%s")));
+
+    bind(ForkJoinPool.class)
+        .toInstance(new ForkJoinPool(availableProcessors,
+            ThreadFactories.createForkJoinFactory("web-fetcher-fork-join-pool-%s"),
+            ThreadFactories.UNCAUGHT_EXCEPTION_HANDLER, false));
 
     bind(WebServiceHeartbeatListener.class).toInstance(new WebServiceHeartbeatListener());
   }

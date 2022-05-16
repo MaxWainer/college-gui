@@ -5,19 +5,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import maxwainer.college.gui.CollegeGuiApplication;
 import maxwainer.college.gui.common.AppLogger;
 import maxwainer.college.gui.config.AppConfig;
-import maxwainer.college.gui.exception.MissingPropertyException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import org.jetbrains.annotations.NotNull;
 
+// TODO: Fix when application won't stop
 public final class WebServiceHeartbeatListener implements Runnable {
 
   @Inject
@@ -65,11 +59,8 @@ public final class WebServiceHeartbeatListener implements Runnable {
 //
 //    alert.show();
 
-
-    primaryStage.setScene(null);
-    // System.exit(1); // program exit exit
-    Platform.exit(); // exit javafx application
-
-    throw new RuntimeException("Unreachable");
+    primaryStage.hide();
+    Platform.exit();
+    System.exit(0);
   }
 }

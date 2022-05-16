@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18"
-  xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="maxwainer.college.gui.pages.ticket.ListTicketsController">
-  <ListView layoutX="150.0" layoutY="100.0" prefHeight="390.0" prefWidth="560.0" fx:id="ticketList"/>
-  <Button layoutX="390.0" layoutY="530.0" mnemonicParsing="false" text="Back to main menu"
-    onMouseClicked="#onBackButtonClick"/>
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="maxwainer.college.gui.pages.ticket.ListTicketsController">
+  <TableView fx:id="ticketList" layoutX="99.0" layoutY="14.0" prefHeight="500.0" prefWidth="700.0">
+    <columns>
+      <TableColumn fx:id="sittingIndexColumn" prefWidth="100.0" text="Sitting Index" />
+      <TableColumn fx:id="sittingTypeColumn" prefWidth="100.0" text="Sitting type" />
+         <TableColumn fx:id="carriageColumn" prefWidth="100.0" text="Carriage" />
+         <TableColumn fx:id="trainColumn" prefWidth="100.0" text="Train" />
+         <TableColumn fx:id="endStationColumn" prefWidth="100.0" text="End station" />
+      <TableColumn fx:id="timeColumn" prefWidth="100.0" text="Time" />
+      <TableColumn fx:id="directionColumn" prefWidth="100.0" text="Direction" />
+    </columns>
+  </TableView>
+  <Button layoutX="390.0" layoutY="530.0" mnemonicParsing="false" onMouseClicked="#onBackButtonClick" text="Back to main menu" />
+  <Button layoutX="748.0" layoutY="531.0" mnemonicParsing="false" onMouseClicked="#onRemoveOrder" prefHeight="49.0" prefWidth="103.0" text="Remove order" />
 </AnchorPane>

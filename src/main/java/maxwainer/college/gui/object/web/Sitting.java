@@ -27,4 +27,27 @@ public record Sitting(
     @NotNull Carriage relatedCarriage,
     @Nullable Ticket ticket) {
 
+  public boolean taken() {
+    return ticket != null;
+  }
+
+  public boolean notToken() {
+    return !taken();
+  }
+
+  private boolean willBeFree() {
+    // check is ticket null
+    if (ticket == null) return true;
+
+    // get actives
+    final var actives = relatedCarriage.relatedTrain()
+        .actives();
+
+    final var filtered = actives.stream()
+        // check is
+        .filter(active -> active.stationId() == ticket.endStationId())
+        .findFirst();
+
+    return filtered.isEmpty();
+  }
 }

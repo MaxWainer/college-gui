@@ -13,7 +13,6 @@ import javafx.scene.control.TextField;
 import maxwainer.college.gui.common.Alerts;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.layout.NumericField;
-import maxwainer.college.gui.values.AppValues;
 import maxwainer.college.gui.web.enums.user.TokenResult;
 import maxwainer.college.gui.web.implementation.auth.LoginWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
@@ -22,7 +21,7 @@ import maxwainer.college.gui.web.result.EnumResult;
 public class LoginPageController extends AbstractAuthPage {
 
   @Inject
-  private AppValues appValues;
+  private LoginWebFetcher fetcher;
 
   @FXML
   private PasswordField passwordField;
@@ -45,23 +44,13 @@ public class LoginPageController extends AbstractAuthPage {
 
     final var passportId = passportIdField.getValue();
 
-    final var optional = webFetcherRegistry.findFetcher(LoginWebFetcher.class);
-
-    if (optional.isEmpty()) {
-      Alerts.showError("Internal error, contact developer!",
-          "Developer information: 'Auth fetcher is not present!'");
-      return;
-    }
-
-    final var fetcher = optional.get();
-
     try {
       final var result = fetcher.fetchData(
           WebParameters
               .builder()
-              .appendParam("passportId", passportId)
               .appendParam("username", username)
               .appendParam("password", password)
+              .appendParam("passportId", passportId)
               .build()
       ).join();
 

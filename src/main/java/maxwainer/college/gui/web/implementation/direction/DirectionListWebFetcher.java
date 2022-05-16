@@ -6,18 +6,17 @@ import java.util.ArrayList;
 import maxwainer.college.gui.exception.MissingPropertyException;
 import maxwainer.college.gui.object.web.Direction;
 import maxwainer.college.gui.web.implementation.AbstractWebFetcher;
-import maxwainer.college.gui.web.implementation.auth.AbstractAuthWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
 import maxwainer.college.gui.web.result.ObjectListResult;
 import okhttp3.Request;
 import org.jetbrains.annotations.NotNull;
 
-public final class DirectionWebFetcher extends AbstractWebFetcher<ObjectListResult<Direction>> {
+public final class DirectionListWebFetcher extends AbstractWebFetcher<ObjectListResult<Direction>> {
 
   @Override
   protected @NotNull Request buildRequest(@NotNull WebParameters parameters)
       throws MissingPropertyException, IOException {
-    return routeAuthorizedRequest("direction/Direction/list")
+    return makeAuthorizedRequest("direction/Direction/list")
         .build();
   }
 

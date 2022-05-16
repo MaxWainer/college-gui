@@ -16,7 +16,7 @@ public final class ActiveListWebFetcher extends AbstractWebFetcher<ObjectListRes
   @Override
   protected @NotNull Request buildRequest(@NotNull WebParameters parameters)
       throws MissingPropertyException, IOException {
-    return routeAuthorizedRequest("active/Active/list")
+    return makeAuthorizedRequest("active/Active/list")
         .get()
         .build();
   }

@@ -25,4 +25,10 @@ public record Carriage(
     @NotNull Train relatedTrain,
     @NotNull Collection<Sitting> sittings) {
 
+  public @NotNull Collection<Sitting> sittingsFiltered() {
+    return sittings.stream()
+        .filter(Sitting::notToken)
+        .toList();
+  }
+
 }

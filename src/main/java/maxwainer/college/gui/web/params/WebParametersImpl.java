@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
+import maxwainer.college.gui.common.Types;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -25,10 +25,14 @@ final class WebParametersImpl implements WebParameters {
   }
 
   @Override
-  public <T extends Record> @NotNull T toModel(@NotNull Class<? extends T> possibleRecord) {
+  public <T extends Record> @NotNull T toModel(@NotNull Class<? extends T> possibleRecord, final boolean unboxPrimitives) {
     try {
       final var constructor = possibleRecord
-          .getConstructor(rawMap.values().stream().map(Object::getClass).toArray(Class[]::new));
+          .getConstructor(rawMap
+              .values()
+              .stream()
+              .map(obj -> Types.unboxed(obj.getClass()))
+              .toArray(Class[]::new));
 
       return constructor.newInstance(rawMap.values().toArray());
     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
