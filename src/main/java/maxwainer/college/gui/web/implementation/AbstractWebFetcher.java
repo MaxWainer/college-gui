@@ -18,7 +18,9 @@ import maxwainer.college.gui.web.implementation.direction.DirectionListWebFetche
 import maxwainer.college.gui.web.implementation.ticket.MultiTicketRemoveWebFetcher;
 import maxwainer.college.gui.web.implementation.ticket.OrderTicketWebFetcher;
 import maxwainer.college.gui.web.implementation.ticket.TicketListWebFetcher;
+import maxwainer.college.gui.web.implementation.user.UserListWebFetcher;
 import maxwainer.college.gui.web.params.WebParameters;
+import maxwainer.college.gui.web.result.ObjectListResult;
 import maxwainer.college.gui.web.result.Result;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract sealed class AbstractWebFetcher<T extends Result> implements WebFetcher<T> permits
     ActiveListWebFetcher, TicketListWebFetcher, AbstractAuthWebFetcher, DirectionListWebFetcher,
-    OrderTicketWebFetcher, MultiTicketRemoveWebFetcher {
+    OrderTicketWebFetcher, MultiTicketRemoveWebFetcher, UserListWebFetcher {
 
   @Inject
   protected OkHttpClient client;

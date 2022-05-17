@@ -27,4 +27,26 @@ public record User(
     @NotNull String username,
     @NotNull String role,
     @NotNull Collection<Ticket> tickets) {
+
+  public @NotNull User updateRole(final @NotNull String newRole) {
+    return new User(passportId, firstName, secondName, patronymic, password, username, newRole,
+        tickets);
+  }
+
+  private static final String ADMIN_UNIQUE_ID = "admin";
+
+  public boolean admin() {
+    return role.equals("Administrator");
+  }
+
+  public boolean superUser() {
+    return username.equals(ADMIN_UNIQUE_ID) && firstName.equals(ADMIN_UNIQUE_ID)
+        && secondName.equals(ADMIN_UNIQUE_ID) && patronymic.equals(ADMIN_UNIQUE_ID)
+        && admin();
+  }
+
+  public boolean moderator() {
+    return admin() || role.equals("Moderator");
+  }
+
 }

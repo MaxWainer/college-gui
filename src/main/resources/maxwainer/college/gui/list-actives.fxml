@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="maxwainer.college.gui.pages.active.ListActivesController">
+  <Button layoutX="387.0" layoutY="526.0" mnemonicParsing="false" prefHeight="60.0"
+    prefWidth="127.0" text="Back to main menu" onMouseClicked="#onBackButtonClick"/>
+  <TableView layoutX="95.0" layoutY="14.0" prefHeight="485.0" prefWidth="700.0" fx:id="activesTableView">
+    <columns>
+      <TableColumn prefWidth="175" text="Direction" fx:id="directionColumn"/>
+      <TableColumn prefWidth="175" text="Station" fx:id="stationColumn"/>
+      <TableColumn prefWidth="175" text="Arrive time" fx:id="arriveTimeColumn"/>
+      <TableColumn prefWidth="175" text="Train" fx:id="trainColumn"/>
+    </columns>
+  </TableView>
+</AnchorPane>

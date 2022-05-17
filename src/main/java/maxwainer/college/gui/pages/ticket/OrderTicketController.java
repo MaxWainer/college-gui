@@ -88,8 +88,7 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
           .join();
 
       // add from result all values into directions combobox
-      directions.getItems()
-          .addAll(directionResult.value());
+      directions.getItems().addAll(directionResult);
 
       initPropertyListeners();
     } catch (MissingPropertyException | IOException e) {
@@ -105,7 +104,9 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
 
   private void initPropertyListeners() {
     directions.valueProperty().addListener((__, ___, value) -> {
-      if (value == null) return;
+      if (value == null) {
+        return;
+      }
 
       // get items
       final var activeItems = active.getItems();
@@ -128,7 +129,9 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
       stationItems.clear();
       trainsItems.clear();
 
-      if (value == null) return;
+      if (value == null) {
+        return;
+      }
 
       final var station = value.station();
 
@@ -149,7 +152,9 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
       // clear them
       carriageItems.clear();
 
-      if (value == null) return;
+      if (value == null) {
+        return;
+      }
 
       // add all of them
       carriageItems.addAll(value.carriages());
@@ -166,7 +171,9 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
       // clear them
       sittingItems.clear();
 
-      if (value == null) return;
+      if (value == null) {
+        return;
+      }
 
       // add all of them
       sittingItems.addAll(value.sittingsFiltered());
@@ -296,7 +303,8 @@ public class OrderTicketController extends AbstractSubPage implements Initializa
     sittingIndexColumn.setCellValueFactory(new MethodVisitorCellValueFactory<>(Sitting::index));
     sittingTypeColumn.setCellValueFactory(new MethodVisitorCellValueFactory<>(Sitting::sitType));
     statusColumn.setCellValueFactory(new MethodVisitorCellValueFactory<>(
-        sitting -> sitting.notToken() ? "Available" : "Already taken"));
+        sitting -> sitting.notToken() ? "Available"
+            : "Already taken" + (sitting.willBeFree() ? " (Will be free)" : "")));
   }
 
   @FXML

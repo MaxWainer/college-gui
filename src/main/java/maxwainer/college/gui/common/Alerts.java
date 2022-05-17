@@ -19,6 +19,17 @@ public final class Alerts {
     AppLogger.LOGGER.log(Level.SEVERE, throwable, () -> "An exception acquired while");
   }
 
+  public static Alert showConfirmation(
+      final @NotNull String title,
+      final @NotNull String message) {
+    final var alert = new Alert(AlertType.CONFIRMATION);
+
+    alert.setTitle(title);
+    alert.setContentText(message);
+
+    return alert;
+  }
+
   public static void showInfo(
       final @NotNull String title,
       final @NotNull String errorMessage) {
@@ -63,7 +74,7 @@ public final class Alerts {
     final var output = new ArrayList<StackTraceElement>();
 
     for (final var element : elements) {
-      if (element.getClassName().contains("maxwainer.college.gui")) {
+      if (!element.getClassName().contains("javafx")) {
         output.add(element);
       }
     }

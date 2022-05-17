@@ -35,7 +35,7 @@ public record Sitting(
     return !taken();
   }
 
-  private boolean willBeFree() {
+  public boolean willBeFree() {
     // check is ticket null
     if (ticket == null) return true;
 
